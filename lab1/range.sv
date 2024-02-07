@@ -23,26 +23,18 @@ module range
 
    logic [RAM_ADDR_BITS - 1:0] 	 num;         // The RAM address to write
    logic 			 running = 0; // True during the iterations
-   logic                         test = 0;
-   logic                         test1 = 0;
+   // triggers to reset we and din at the right cycles
+   logic                         we_trig = 0;
+   logic                         din_trig = 0;
    /* Replace this comment and the code below with your solution,
       which should generate running, done, cgo, n, num, we, and din */
    always_ff @(posedge clk) begin 
-      //we <= 0;
+      // reset default vars
       cgo <= 0;
       done <= 0;
-      test <= 0;
-      test1 <= 0;
-      if (test1) din <= 1;
-      if (we)
-      begin
-	n <= (n+1);
-	num <= (num+1);
-	//din <= 1;
-	test1 <= 1;
-	cgo <= 1;
-	test <= 0;
-      end
+      we_trig <= 0;
+      din_trig <= 0;
+      // start of iterations
       if (go)
       begin
         running <= go;
@@ -51,26 +43,31 @@ module range
 	din <= 1;
 	cgo <= 1;
       end
-      else if (running & (~cgo) & (~cdone)) din <= (din + 1);
-      else if (cdone && (~test))
-      begin
-	//we <= 1;
-	test <= 1;
-      end
-      //else we <= 0;
+      // iterate din
+      else if (running & (~cgo) & (~cdone))   din <= (din + 1);
+      // when iteration is done, trigger we
+      else if (cdone)                         we_trig <= 1;
+      // check to see if iterations are done
       if ((num[3:0] == 4'd15)&&(we))
       begin
         running <= 0;
 	done <= 1;
       end
+      // check to reset din
+      if (din_trig) din <= 1;
+      // after write, reset vars
+      if (we)
+      begin
+	n <= (n+1);
+	num <= (num+1);
+	din_trig <= 1;
+	cgo <= 1;
+      end
     end
-    assign we = cdone == 1 && test == 0;
-      //assign we = cdone == 1;
-      //assign cgo = ((cdone == 1) || (running == 1));
-      //assign done = num[3:0] == 4'd15;
-	/* Replace this comment and the code above with your solution */
-
-   logic 			 we;                    // Write din to addr
+    // assign we here so that it immediately updates with cdone
+    assign we = cdone == 1 && we_trig == 0;
+   
+   logic                         we;
    logic [15:0] 		 din;                   // Data to write
    logic [15:0] 		 mem[RAM_WORDS - 1:0];  // The RAM itself
    logic [RAM_ADDR_BITS - 1:0] 	 addr;                  // Address to read/write
@@ -82,11 +79,5 @@ module range
       count <= mem[addr];      
    end
    
-/*   always_ff @(posedge clk) begin
-      test <= 0;
-      cgo <= 0;
-      we <= 0;
-      done <= 0;
-   end*/
 endmodule
 	     
