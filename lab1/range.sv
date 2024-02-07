@@ -23,16 +23,52 @@ module range
 
    logic [RAM_ADDR_BITS - 1:0] 	 num;         // The RAM address to write
    logic 			 running = 0; // True during the iterations
-
+   logic                         test = 0;
+   logic                         test1 = 0;
    /* Replace this comment and the code below with your solution,
       which should generate running, done, cgo, n, num, we, and din */
-   assign done = cdone;
-   assign cgo = go;
-   assign n = start;
-   assign din = 16'h0;
-   assign num = 0;
-   assign we = running;   
-   /* Replace this comment and the code above with your solution */
+   always_ff @(posedge clk) begin 
+      //we <= 0;
+      cgo <= 0;
+      done <= 0;
+      test <= 0;
+      test1 <= 0;
+      if (test1) din <= 1;
+      if (we)
+      begin
+	n <= (n+1);
+	num <= (num+1);
+	//din <= 1;
+	test1 <= 1;
+	cgo <= 1;
+	test <= 0;
+      end
+      if (go)
+      begin
+        running <= go;
+	n <= start;
+	num <= 0;
+	din <= 1;
+	cgo <= 1;
+      end
+      else if (running & (~cgo) & (~cdone)) din <= (din + 1);
+      else if (cdone && (~test))
+      begin
+	//we <= 1;
+	test <= 1;
+      end
+      //else we <= 0;
+      if ((num[3:0] == 4'd15)&&(we))
+      begin
+        running <= 0;
+	done <= 1;
+      end
+    end
+    assign we = cdone == 1 && test == 0;
+      //assign we = cdone == 1;
+      //assign cgo = ((cdone == 1) || (running == 1));
+      //assign done = num[3:0] == 4'd15;
+	/* Replace this comment and the code above with your solution */
 
    logic 			 we;                    // Write din to addr
    logic [15:0] 		 din;                   // Data to write
@@ -45,6 +81,12 @@ module range
       if (we) mem[addr] <= din;
       count <= mem[addr];      
    end
-
+   
+/*   always_ff @(posedge clk) begin
+      test <= 0;
+      cgo <= 0;
+      we <= 0;
+      done <= 0;
+   end*/
 endmodule
 	     
