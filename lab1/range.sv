@@ -26,8 +26,7 @@ module range
    // triggers to reset we and din at the right cycles
    logic                         we_trig = 0;
    logic                         din_trig = 0;
-   /* Replace this comment and the code below with your solution,
-      which should generate running, done, cgo, n, num, we, and din */
+   
    always_ff @(posedge clk) begin 
       // reset default vars
       cgo <= 0;
