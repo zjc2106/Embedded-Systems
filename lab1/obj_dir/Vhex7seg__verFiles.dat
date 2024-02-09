@@ -1,0 +1,12 @@
+# DESCRIPTION: Verilator output: Timestamp data for --skip-identical.  Delete at will.
+C "-Wall -cc hex7seg.sv -exe hex7seg.cpp -top-module hex7seg"
+S   9492064   305814  1705377556   342697707  1581880860           0 "/usr/bin/verilator_bin"
+S       695 24774835  1706911768   632968000  1706911768   631974000 "hex7seg.sv"
+T      5341 64759550  1706911770    19983000  1706911770    19983000 "obj_dir/Vhex7seg.cpp"
+T      2326 64759549  1706911770    15976000  1706911770    15976000 "obj_dir/Vhex7seg.h"
+T      1768 64759552  1706911770    27986000  1706911770    27986000 "obj_dir/Vhex7seg.mk"
+T       549 24774847  1706911770     6981000  1706911770     6981000 "obj_dir/Vhex7seg__Syms.cpp"
+T       795 64759548  1706911770    11969000  1706911770    11969000 "obj_dir/Vhex7seg__Syms.h"
+T       225 64759553  1706911770    31989000  1706911770    31989000 "obj_dir/Vhex7seg__ver.d"
+T         0        0  1706911770    52969000  1706911770    52969000 "obj_dir/Vhex7seg__verFiles.dat"
+T      1247 64759551  1706911770    23984000  1706911770    23984000 "obj_dir/Vhex7seg_classes.mk"

@@ -47,21 +47,24 @@ module range
       // when iteration is done, trigger we
       else if (cdone)                         we_trig <= 1;
       // check to see if iterations are done
-      if ((num[3:0] == 4'd15)&&(we))
+      if (we)
+        begin
+      if (({1'b0, num[RAM_ADDR_BITS-1:0]} == RAM_WORDS-1))
       begin
         running <= 0;
 	done <= 1;
       end
-      // check to reset din
-      if (din_trig) din <= 1;
       // after write, reset vars
-      if (we)
+      else  
       begin
 	n <= (n+1);
 	num <= (num+1);
 	din_trig <= 1;
 	cgo <= 1;
       end
+end
+      // check to reset din
+      if (din_trig) din <= 1;
     end
     // assign we here so that it immediately updates with cdone
     assign we = cdone == 1 && we_trig == 0;
