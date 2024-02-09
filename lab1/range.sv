@@ -67,7 +67,7 @@ end
       if (din_trig) din <= 1;
     end
     // assign we here so that it immediately updates with cdone
-    assign we = cdone == 1 && we_trig == 0 && din != 1;
+    assign we = cdone == 1 && we_trig == 0 && (din != 1||start==1);
    
    logic                         we;
    logic [15:0] 		 din;                   // Data to write

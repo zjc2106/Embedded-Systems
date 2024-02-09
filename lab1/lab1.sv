@@ -30,7 +30,9 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
     logic                       done_trig = 0;
     logic [15:0]                count_output=0;
     logic [15:0]		display_output= 0;
+    logic [15:0]		display=0;
     logic [15:0]	 	n=0;
+    logic [25:0] 		led_counter=1;
 
     assign clk = CLOCK_50;
    
@@ -55,10 +57,13 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
 
     always_ff @(posedge clk) begin
         go<=0;
-	if (waiting == 1 || waiting == 2) waiting <= waiting + 2'b1;
-        if (waiting == 3)
+	if (led_counter == 0) LEDR[0] <= 0;
+	else led_counter <= led_counter + 1;
+	if (waiting == 1) waiting <= waiting + 2'b1;
+        if (waiting == 2)
         begin
             count_output <= (count);
+	    display_output <= (n + start[15:0]);
             waiting <= 0;
         end
         if (~KEY[3])
@@ -80,30 +85,32 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
         else go_counter <= 0;
         if (done == 1 && ~done_trig) 
         begin
+	    LEDR[0] <= 1;
+	    led_counter <= 1;
             start <= 0;
             waiting <= 1;
             done_trig <= 1;
         end
 	if(~KEY[0])
 	begin
-		if(up_counter == 24'b0)
+		if(up_counter == 24'b0 && (start < 256))
 		begin
 			start <= start + 32'b1;
-			up_counter <=  24'b1; 
+			up_counter <=   24'd4000000;
 			waiting <= 1;
-			display_output <= display_output + 15'b1;	
+			//display_output <= display_output + 15'b1;	
 		end
 		else up_counter <= up_counter + 24'b1;
 	end
 	else up_counter <= 0;
 	if(~KEY[1])
 	begin
-		if(down_counter == 24'b0)
+		if(down_counter == 24'b0 && (start > 0))
 		begin
 			start <= start - 32'b1;
-			down_counter <=  24'd5000000000; 
+			down_counter <=  24'd4000000; 
 			waiting <= 1;
-			display_output <= display_output - 15'b1;	
+			//display_output <= display_output - 15'b1;	
 		end
 		else down_counter <= down_counter + 24'b1;
 	end
@@ -113,6 +120,7 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
 	begin
 		if(reset_counter == 24'b0)
 		begin
+	    LEDR[0] <= 0;
 			start <= 32'b0;
 			reset_counter <=  24'b1; 
 			waiting <= 1;
