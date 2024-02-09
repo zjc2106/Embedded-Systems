@@ -36,7 +36,7 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
     // display switch value on 7 seg display
     hex7seg h1(.a(SW[3:0]), .y(HEX3[6:0]));       
     hex7seg h2(.a(SW[7:4]), .y(HEX4[6:0]));       
-    //hex7seg h3(.a({2'b00, SW[9:8]}), .y(HEX5[6:0]));
+    hex7seg h3(.a({2'b00, SW[9:8]}), .y(HEX5[6:0]));
 
 
 
