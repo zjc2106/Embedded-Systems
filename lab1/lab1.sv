@@ -2,8 +2,8 @@
 //
 // Spring 2023
 //
-// By: <your name here>
-// Uni: <your uni here>
+// By: Zachary Coeur, Sanjay Rajasekharan
+// Uni: zjc2106, sr3765
 
 module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
 	     
