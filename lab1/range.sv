@@ -23,50 +23,57 @@ module range
 
    logic [RAM_ADDR_BITS - 1:0] 	 num;         // The RAM address to write
    logic 			 running = 0; // True during the iterations
-   // triggers to reset we and din at the right cycles
-   logic                         we_trig = 0;
-   logic                         din_trig = 0;
+
+   logic                         we_trig = 0; // Ensures we is high for 1 cycle
+   logic                         din_trig = 0; // Ensures din keeps val for extra cycle 
    
-   always_ff @(posedge clk) begin 
-      // reset default vars
-      cgo <= 0;
-      done <= 0;
+   always_ff @(posedge clk) begin
+
+      // reset default values
+      cgo <= 0; 
+      done <= 0; 
       we_trig <= 0;
-      din_trig <= 0;
-      // start of iterations
-      if (go)
-      begin
-        running <= go;
-	n <= start;
-	num <= 0;
-	din <= 1;
-	cgo <= 1;
+      din_trig <= 0; 
+
+      // start of collatz iterations
+      if (go) begin
+        running <= go; // running goes high
+	n <= start; // start is fed to n (for collatz)
+	num <= 0; // RAM address reset to 0
+	din <= 1; // Iterations for collatz reset
+	cgo <= 1; // starts collatz
       end
-      // iterate din
+
+      // iterate din while collatz is running
       else if (running & (~cgo) & (~cdone))   din <= (din + 1);
-      // when iteration is done, trigger we
+      
+      // when collatz is done, trigger we one cycle after
       else if (cdone)                         we_trig <= 1;
-      // check to see if iterations are done
-      if (we)
-        begin
-      if (({1'b0, num[RAM_ADDR_BITS-1:0]} == RAM_WORDS-1))
-      begin
-        running <= 0;
-	done <= 1;
+      
+      if (we) begin       
+        // check to see if memory is full
+        if (({1'b0, num[RAM_ADDR_BITS-1:0]} == RAM_WORDS-1)) begin
+          running <= 0;
+          done <= 1;
+        end
+        
+        // if not full, iterate and run collatz
+        else begin
+          n <= (n+1);
+          num <= (num+1);
+          din_trig <= 1;
+          cgo <= 1;
+        end
       end
-      // after write, reset vars
-      else  
-      begin
-	n <= (n+1);
-	num <= (num+1);
-	din_trig <= 1;
-	cgo <= 1;
-      end
-end
-      // check to reset din
+      
+      // resets din one cycle after cgo goes high
       if (din_trig) din <= 1;
+    
     end
-    // assign we here so that it immediately updates with cdone
+    
+    // ensures we immediately updates with cdone
+    // check for din ensures we isn't high at the start
+    // of multiple runs of range (for lab1.sv)
     assign we = cdone == 1 && we_trig == 0 && (din != 1||start==1);
    
    logic                         we;
