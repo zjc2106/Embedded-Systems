@@ -33,7 +33,7 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
      logic [11:0]               count_output = 0; // values shown on 7-seg displays
      logic [11:0]               n_output = 0;
 
-     logic [10:0]	 	n_0 = 0; // number at start of range 
+     logic [11:0]	 	n_0 = 0; // number at start of range 
 
      logic [24:0] 		led_counter = 1; // counter to ensure done indicator flashes ~1s  
 
@@ -63,7 +63,7 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
          // 2 cycles after start changes; count is ready
          if (waiting == 2) begin
              count_output <= count[11:0]; 
-             n_output <= {1'b0, (n_0 + start[10:0])};
+             n_output <= (n_0 + start[11:0]);
              waiting <= 0;
          end
 
@@ -82,7 +82,7 @@ module lab1( input logic        CLOCK_50,  // 50 MHz Clock input
             if (go_counter == 24'b0) begin 
                  go <= 1; 
                  start <= {22'b0, SW[9:0]}; 
-	         n_0 <= {1'b0, SW[9:0]};
+	         n_0 <= {2'b0, SW[9:0]};
                  go_counter <= 24'b1;
                  done_trig <= 0;
             end else go_counter <= go_counter + 24'b1;
