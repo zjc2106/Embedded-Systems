@@ -2,7 +2,7 @@
  *
  * CSEE 4840 Lab 2 for 2019
  *
- * Name/UNI: Please Changeto Yourname (pcy2301)
+ * Name/UNI: Zachary Coeur (zjc2106)/Sanjay Rajasekharan (sr3765)
  */
 #include "fbputchar.h"
 #include <stdio.h>
