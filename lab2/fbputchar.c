@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-
+#include <string.h>
 #include <linux/fb.h>
 
 #define FBDEV "/dev/fb0"
@@ -133,12 +133,12 @@ void fbclear()
 
 // returns last visible row on screen
 int getLastRow(){
-  return (fb_vinfo.xres / FONT_WIDTH) - 1
+  return (fb_vinfo.xres / FONT_WIDTH) - 1;
 }
 
 // returns last visible col on screen
-int int getLastCol(){
-  return (fb_vinfo.yres / FONT_HEIGHT) - 1
+int getLastCol(){
+  return (fb_vinfo.yres / FONT_HEIGHT) - 1;
 }
 
 /* 8 X 16 console font from /lib/kbd/consolefonts/lat0-16.psfu.gz

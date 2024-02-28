@@ -84,8 +84,8 @@ int main()
   char keystate[12];
 
   // get last visible row and col of screen
-  int last_row = getLastRow();
-  int last_col = getLastCol();
+  int last_row = 0;
+  int last_col = 64;
 
   // testing var used for keyboard input
   char temp_keystate[1];
@@ -101,7 +101,7 @@ int main()
   /* Draw rows of asterisks across the top and bottom of the screen */
   for (col = 0 ; col < last_col ; col++) {
     fbputchar('*', 0, col);
-    fbputchar('*', 23, col);
+    fbputchar('*', 10, col);
     fbputchar('-', 20, col);
   }
 
@@ -151,7 +151,7 @@ int main()
       fbputs(keystate, 21, 0);
 
       // VERY basic way to convert single keycode to char
-      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]])
+      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]]);
       printf("%c\n", temp_keystate);
       fbputs(temp_keystate, 22, 0);
 
@@ -199,8 +199,8 @@ void *network_thread_f(void *ignored)
     if(row == 20){
         // this has gotta be terribly inefficient, is there a better way?
         for (row = 5; row < 20; row++) {
-          for (col = 0 ; col < last_col ; col++) {
-            fbputschar(' ', row, col);
+          for (int col = 0 ; col < last_col ; col++) {
+            fbputchar(' ', row, col);
           }
         }
       row = 5;
