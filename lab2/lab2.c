@@ -101,13 +101,11 @@ int main()
   /* Draw rows of asterisks across the top and bottom of the screen */
   for (col = 0 ; col < last_col ; col++) {
     fbputchar('*', 0, col);
-    fbputchar('*', 10, col);
+    fbputchar('*', 23, col);
     fbputchar('-', 20, col);
   }
 
   fbputs("Hello CSEE 4840 World!", 4, 10);
-
-  fbclear();
 
   /* Open the keyboard */
   if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
