@@ -131,12 +131,12 @@ void fbclear()
   memset(framebuffer, 0, fb_finfo.smem_len);
 }
 
-// returns last visible row on screen
+// returns last visible row on screen DOES NOT WORK
 int getLastRow(){
   return (fb_vinfo.xres / FONT_WIDTH) - 1;
 }
 
-// returns last visible col on screen
+// returns last visible col on screen DOES NOT WORK
 int getLastCol(){
   return (fb_vinfo.yres / FONT_HEIGHT) - 1;
 }
