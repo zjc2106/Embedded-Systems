@@ -26,10 +26,15 @@
 #define FONT_HEIGHT 16
 #define BITS_PER_PIXEL 32
 
+
 struct fb_var_screeninfo fb_vinfo;
 struct fb_fix_screeninfo fb_finfo;
 unsigned char *framebuffer;
 static unsigned char font[];
+
+// zac variables
+// last visible column on the screen
+#define LAST_COL (fb_vinfo.xres / FONT_WIDTH) - 1
 
 /*
  * Open the framebuffer to prepare it to be written to.  Returns 0 on success
@@ -103,18 +108,37 @@ void fbputchar(char c, int row, int col)
 }
 
 /*
- * Draw the given string at the given row/column.
- * String must fit on a single line: wrap-around is not handled.
+ * Draw the given string at the given row/column. This is where the wraparound check is done.
  */
 void fbputs(const char *s, int row, int col)
 {
   char c;
-  while ((c = *s++) != 0) fbputchar(c, row, col++);
+  // remember so we can start from same col if line wraps around
+  int origCol = col; 
+  while ((c = *s++) != 0) {
+    // wraparound check
+    if(col > LAST_COL){
+      row+=1;
+      col = origCol;
+    }
+    fbputchar(c, row, col++);
+  }
 }
 
+// clears framebuffer by simply setting all fb mem to 0
 void fbclear()
 {
   memset(framebuffer, 0, fb_finfo.smem_len);
+}
+
+// returns last visible row on screen
+int getLastRow(){
+  return (fb_vinfo.xres / FONT_WIDTH) - 1
+}
+
+// returns last visible col on screen
+int int getLastCol(){
+  return (fb_vinfo.yres / FONT_HEIGHT) - 1
 }
 
 /* 8 X 16 console font from /lib/kbd/consolefonts/lat0-16.psfu.gz

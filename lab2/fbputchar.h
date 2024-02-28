@@ -10,6 +10,9 @@
 extern int fbopen(void);
 extern void fbputchar(char, int, int);
 extern void fbputs(const char *, int, int);
+// zac functions
 extern void fbclear(void);
+extern int getLastCol(void);
+extern int getLastRow(void);
 
 #endif

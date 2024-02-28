@@ -23,6 +23,39 @@
 
 #define BUFFER_SIZE 128
 
+int usb_to_ascii[] = {
+    0,   // 0x00
+    0,   // 0x01
+    0,   // 0x02
+    0,   // 0x03
+    'a', // 0x04
+    'b', // 0x05
+    'c', // 0x06
+    'd', // 0x07
+    'e', // 0x08
+    'f', // 0x09
+    'g', // 0x0A
+    'h', // 0x0B
+    'i', // 0x0C
+    'j', // 0x0D
+    'k', // 0x0E
+    'l', // 0x0F
+    'm', // 0x10
+    'n', // 0x11
+    'o', // 0x12
+    'p', // 0x13
+    'q', // 0x14
+    'r', // 0x15
+    's', // 0x16
+    't', // 0x17
+    'u', // 0x18
+    'v', // 0x19
+    'w', // 0x1A
+    'x', // 0x1B
+    'y', // 0x1C
+    'z'  // 0x1D
+};
+
 /*
  * References:
  *
@@ -50,18 +83,31 @@ int main()
   int transferred;
   char keystate[12];
 
+  // get last visible row and col of screen
+  int last_row = getLastRow();
+  int last_col = getLastCol();
+
+  // testing var used for keyboard input
+  char temp_keystate[1];
+
+
   if ((err = fbopen()) != 0) {
     fprintf(stderr, "Error: Could not open framebuffer: %d\n", err);
     exit(1);
   }
 
+  fbclear();
+
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = 0 ; col < 64 ; col++) {
+  for (col = 0 ; col < last_col ; col++) {
     fbputchar('*', 0, col);
     fbputchar('*', 23, col);
+    fbputchar('-', 20, col);
   }
 
   fbputs("Hello CSEE 4840 World!", 4, 10);
+
+  fbclear();
 
   /* Open the keyboard */
   if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
@@ -102,10 +148,23 @@ int main()
       sprintf(keystate, "%02x %02x %02x", packet.modifiers, packet.keycode[0],
 	      packet.keycode[1]);
       printf("%s\n", keystate);
-      fbputs(keystate, 6, 0);
+      fbputs(keystate, 21, 0);
+
+      // VERY basic way to convert single keycode to char
+      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]])
+      printf("%c\n", temp_keystate);
+      fbputs(temp_keystate, 22, 0);
+
+
       if (packet.keycode[0] == 0x29) { /* ESC pressed? */
-	break;
+	      break;
       }
+
+      /* RET pressed?
+      if (packet.keycode[0] == 0x28) {
+        // implement sending message here
+      }
+      */
     }
   }
 
@@ -122,11 +181,30 @@ void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
+
+  // get last visible row and col of screen
+  int last_row = getLastRow();
+  int last_col = getLastCol();
+
+  int row = 5; // row in which messages begin on
   /* Receive data */
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
-    fbputs(recvBuf, 8, 0);
+    fbputs(recvBuf, row, 0);
+    row = row + 1;
+
+
+    // when too many messages come through, clear all messages
+    if(row == 20){
+        // this has gotta be terribly inefficient, is there a better way?
+        for (row = 5; row < 20; row++) {
+          for (col = 0 ; col < last_col ; col++) {
+            fbputschar(' ', row, col);
+          }
+        }
+      row = 5;
+    }
   }
 
   return NULL;
