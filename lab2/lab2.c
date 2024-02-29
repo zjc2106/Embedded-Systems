@@ -152,7 +152,7 @@ int main()
       fbputs(keystate, 21, 0);
 
       // VERY basic way to convert single keycode to char
-      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]]);
+      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (packet.modifiers == 2 ? 'A' - 'a': 0));
       //printf("%c\n", temp_keystate);
       fbputs(temp_keystate, 22, 0);
 
