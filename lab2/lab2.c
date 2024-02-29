@@ -187,7 +187,7 @@ void *network_thread_f(void *ignored)
   int last_row = getLastRow();
   int last_col = getLastCol();
 
-  int row = 5; // row in which messages begin on
+  int row = SERVER_FIRST_ROW; // row in which messages begin on
   /* Receive data */
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
