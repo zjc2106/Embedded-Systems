@@ -23,6 +23,9 @@
 
 #define BUFFER_SIZE 128
 
+#define SERVER_FIRST_ROW 5
+#define SERVER_LAST_ROW 19
+
 int usb_to_ascii[] = {
     0,   // 0x00
     0,   // 0x01
@@ -102,7 +105,7 @@ int main()
   for (col = 0 ; col < last_col ; col++) {
     fbputchar('*', 0, col);
     fbputchar('*', 23, col);
-    fbputchar('-', 20, col);
+    fbputchar('-', SERVER_LAST_ROW  + 1, col);
   }
 
   fbputs("Hello CSEE 4840 World!", 4, 10);
@@ -188,7 +191,7 @@ void *network_thread_f(void *ignored)
   /* Receive data */
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
-    printf("%s", recvBuf);
+    printf("%s\n", recvBuf);
     fbputs(recvBuf, row, 0);
     row = row + 1 + (strlen(recvBuf) / last_col);
 
@@ -196,7 +199,7 @@ void *network_thread_f(void *ignored)
     // when too many messages come through, clear all messages
     if(row == 20){
         // this has gotta be terribly inefficient, is there a better way?
-        for (row = 5; row < 20; row++) {
+        for (row = SERVER_FIRST_ROW; row <= SERVER_LAST_ROW; row++) {
           for (int col = 0 ; col < last_col ; col++) {
             fbputchar(' ', row, col);
           }
