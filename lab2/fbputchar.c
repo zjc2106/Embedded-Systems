@@ -121,7 +121,11 @@ void fbputs(const char *s, int row, int col)
       row+=1;
       col = origCol;
     }
-    fbputchar(c, row, col++);
+    
+    if (c == '\n') {
+      row++;
+      col = origCol;
+    } else fbputchar(c, row, col++);
   }
 }
 
