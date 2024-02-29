@@ -117,14 +117,14 @@ int fbputs(const char *s, int row, int col)
   int origCol = col; 
   while ((c = *s++) != 0) {
     // wraparound check
-    if(col > LAST_COL){
+    if(col > LAST_COL || c == '\n'){
       row+=1;
       col = origCol;
     }
-    if (c == '\n') {
-      row++;
-      col = origCol;
-    } else fbputchar(c, row, col++);
+    if (c >= ' ' && c <= '~')
+    {
+        fbputchar(c, row, col++);
+    }
   }
 
   return row;
