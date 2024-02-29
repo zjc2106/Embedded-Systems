@@ -99,6 +99,8 @@ int main()
     exit(1);
   }
 
+  int caps_lock = 0;
+
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
@@ -152,7 +154,14 @@ int main()
       fbputs(keystate, 21, 0);
 
       // VERY basic way to convert single keycode to char
-      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (packet.modifiers == 2 ? 'A' - 'a': 0));
+      if (packet.keycode[0] == 0x39) {
+        caps_lock = !caps_lock;
+      } else {
+          if (caps_lock == 0)
+            sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (packet.modifiers == 2 ? 'A' - 'a': 0));
+          else 
+            sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] - (packet.modifiers == 2 ? 'A' - 'a': 0));
+      }
       //printf("%c\n", temp_keystate);
       fbputs(temp_keystate, 22, 0);
 
