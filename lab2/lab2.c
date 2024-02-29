@@ -23,7 +23,7 @@
 
 #define BUFFER_SIZE 128
 
-#define SERVER_FIRST_ROW 5
+#define SERVER_FIRST_ROW 1
 #define SERVER_LAST_ROW 19
 
 int usb_to_ascii[] = {
@@ -103,12 +103,12 @@ int main()
 
   /* Draw rows of asterisks across the top and bottom of the screen */
   for (col = 0 ; col < last_col ; col++) {
-    fbputchar('*', 0, col);
+    fbputchar('*', SERVER_FIRST_ROW - 1, col);
     fbputchar('*', 23, col);
     fbputchar('-', SERVER_LAST_ROW  + 1, col);
   }
 
-  fbputs("Hello CSEE 4840 World!", 4, 10);
+  // fbputs("Hello CSEE 4840 World!", 4, 10);
 
   /* Open the keyboard */
   if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
