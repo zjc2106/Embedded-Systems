@@ -193,7 +193,7 @@ void *network_thread_f(void *ignored)
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s\n", recvBuf);
-    row = fbputs(recvBuf, row, 0);
+    row = fbputs(recvBuf, row, 0)  + 1;
     // row = row + 1 + (strlen(recvBuf) / last_col);
 
     // when too many messages come through, clear all messages
