@@ -138,7 +138,8 @@ int getLastRow(){
 
 // returns last visible col on screen DOES NOT WORK
 int getLastCol(){
-  return (fb_vinfo.yres / FONT_HEIGHT) - 1;
+  return LAST_COL;
+  // return (fb_vinfo.yres / FONT_HEIGHT) - 1;
 }
 
 /* 8 X 16 console font from /lib/kbd/consolefonts/lat0-16.psfu.gz
