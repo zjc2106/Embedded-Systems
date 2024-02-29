@@ -190,7 +190,7 @@ void *network_thread_f(void *ignored)
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
     fbputs(recvBuf, row, 0);
-    row = row + 1;
+    row = row + 1 + (strlen(recvBuf) / last_col);
 
 
     // when too many messages come through, clear all messages
