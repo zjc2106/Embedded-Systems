@@ -110,7 +110,7 @@ void fbputchar(char c, int row, int col)
 /*
  * Draw the given string at the given row/column. This is where the wraparound check is done.
  */
-void fbputs(const char *s, int row, int col)
+int fbputs(const char *s, int row, int col)
 {
   char c;
   // remember so we can start from same col if line wraps around
@@ -121,12 +121,14 @@ void fbputs(const char *s, int row, int col)
       row+=1;
       col = origCol;
     }
-    
+
     if (c == '\n') {
       row++;
       col = origCol;
     } else fbputchar(c, row, col++);
   }
+
+  return row;
 }
 
 // clears framebuffer by simply setting all fb mem to 0
