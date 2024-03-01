@@ -1,6 +1,6 @@
 CFLAGS = -Wall
 
-OBJECTS = lab2.o fbputchar.o usbkeyboard.o
+OBJECTS = lab2.o fbputchar.o usbkeyboard.o keymappings.o
 
 TARFILES = Makefile lab2.c \
 	fbputchar.h fbputchar.c \
@@ -16,9 +16,10 @@ lab2.tar.gz : $(TARFILES)
 	tar zcf lab2.tar.gz lab2
 	rm -rf lab2
 
-lab2.o : lab2.c fbputchar.h usbkeyboard.h
+lab2.o : lab2.c fbputchar.h usbkeyboard.h keymappings.h
 fbputchar.o : fbputchar.c fbputchar.h
 usbkeyboard.o : usbkeyboard.c usbkeyboard.h
+keymappings.o : keymappings.c keymappings.h
 
 .PHONY : clean
 clean :

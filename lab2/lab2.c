@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include "usbkeyboard.h"
 #include <pthread.h>
+#include "keymappings.h"
 
 /* Update SERVER_HOST to be the IP address of
  * the chat server you are connecting to
@@ -232,7 +233,7 @@ int main()
       else if (packet.keycode[0] != EMPTY)
       {
         // VERY basic way to convert single keycode to char
-        sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
+        sprintf(temp_keystate, "%c", mapKeycode(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
         //printf("%c\n", temp_keystate);
 
         if (message_length < BUFFER_SIZE - 1) {
