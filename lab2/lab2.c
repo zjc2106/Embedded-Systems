@@ -163,7 +163,9 @@ int main()
   int cursor = 0;
   int message_length = 0;
   char user_input[BUFFER_SIZE];
-  
+
+  memset(user_input, ' ', BUFFER_SIZE);
+  user_input[BUFFER_SIZE - 1] = '\0';
 
   for (;;) {
 
@@ -195,7 +197,7 @@ int main()
         message_length++;
 
         printf("cursor: %d\n", cursor);
-        printf("user_input[%d]: %d", cursor-1, user_input[cursor-1]);
+        printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
       }
 
       if (packet.keycode[0] == LEFT_ARROW) {
