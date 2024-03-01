@@ -288,7 +288,7 @@ int main()
 
           if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
 
-            if (user_col >= last_col - 1) {
+            if (user_col >= last_col - 1 && (user_row != USER_LAST_ROW)) {
               user_col = FIRST_COL;
               user_row++;
             } else user_col++;
