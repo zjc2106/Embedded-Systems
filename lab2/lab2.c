@@ -210,6 +210,8 @@ int main()
             user_col = last_col;
             user_row--;
           } else user_col--;
+
+          fbputchar(' ', user_row, user_col); // clear deleted character
           
         }
       }
