@@ -189,8 +189,8 @@ int main()
       if (packet.keycode[0] == ENTER) {
         // send message to server
         write(sockfd, user_input, strlen(user_input));
-        memset(user_input, ' ', BUFFER_SIZE);
-        user_input[BUFFER_SIZE - 1] = '\0';
+        memset(user_input, '\0', BUFFER_SIZE);
+        fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
         cursor = 0;
         message_length = 0;
         user_row = USER_FIRST_ROW;
@@ -307,11 +307,7 @@ void *network_thread_f(void *ignored)
     // when too many messages come through, clear all messages
     if(row >= 20){
         // this has gotta be terribly inefficient, is there a better way?
-        for (row = SERVER_FIRST_ROW; row <= SERVER_LAST_ROW; row++) {
-          for (int col = 0 ; col < last_col ; col++) {
-            fbputchar(' ', row, col);
-          }
-        }
+        fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
       row = SERVER_FIRST_ROW;
     }
   }

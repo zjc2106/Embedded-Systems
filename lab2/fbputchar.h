@@ -16,5 +16,6 @@ extern int getLastCol(void);
 extern int getLastRow(void);
 
 extern void cursor_fbputchar(char c, int row, int col);
+extern void fbclearrows(int start, int end);
 
 #endif

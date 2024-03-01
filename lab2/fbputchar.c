@@ -60,6 +60,7 @@ int fbopen()
   return 0;
 }
 
+
 /*
  * Draw the given character at the given row/column.
  * fbopen() must be called first.
@@ -172,6 +173,14 @@ int fbputs(const char *s, int row, int col)
   }
 
   return row;
+}
+
+void fbclearrows(int start, int end) {
+ for (row = start; row <= end; row++) {
+    for (int col = 0 ; col < LAST_COL ; col++) {
+      fbputchar(' ', row, col);
+    }
+  }
 }
 
 // clears framebuffer by simply setting all fb mem to 0
