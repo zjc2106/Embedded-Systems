@@ -218,19 +218,21 @@ int main()
           if (user_col == 0) {
             user_col = last_col;
             user_row--;
-          } else {
-            user_col--;
-          }
+          } else user_col--;
           cursor--;
         }
       }
 
-      // else if (packet.keycode[0] == RIGHT_ARROW) {
-      //   if (cursor < message_length) {
-      //     cursor++;
-      //     user_col++;
-      //   }
-      // }
+      else if (packet.keycode[0] == RIGHT_ARROW) {
+        if (cursor < message_length) {
+          if (user_col == last_col) {
+            user_col = 0;
+            user_row++;
+          } else user_col++;
+
+          cursor++;
+        }
+      }
       // else if (packet.keycode[0] == UP_ARROW) {
       //   if (user_row > USER_FIRST_ROW) {
       //     user_row--;
