@@ -165,8 +165,8 @@ int main()
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
-  memset(user_input, ' ', BUFFER_SIZE);
-  user_input[BUFFER_SIZE - 1] = '\0';
+  // memset(user_input, ' ', BUFFER_SIZE);
+  // user_input[BUFFER_SIZE - 1] = '\0';
 
   for (;;) {
 
