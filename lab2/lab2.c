@@ -185,16 +185,14 @@ int main()
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
+  char clear_input[BUFFER_SIZE];
+  memset(clear_input, ' ', BUFFER_SIZE);
+  clear_input[BUFFER_SIZE - 1] = '\0';
 
   for (;;) {
 
+    fbputs(clear_input, USER_FIRST_ROW, 0);
     fbputs(user_input, USER_FIRST_ROW, 0);
-    
-    char spaces[BUFFER_SIZE - message_length];
-    memset(spaces, ' ', BUFFER_SIZE - message_length);
-    spaces[BUFFER_SIZE - message_length - 1] = '\0';
-    
-    fbputs(spaces, user_row, user_col);
     
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
 
