@@ -163,7 +163,11 @@ int fbputs(const char *s, int row, int col)
   while ((c = *s++) != 0) {
     // wraparound check
     if(col >= LAST_COL || c == '\n'){
-      row+=1;
+      if (row < 19) row+=1;
+      else {
+        fbclearrows(0, 19);
+        row = 0;
+      }
       col = origCol;
     }
     if (c >= ' ' && c <= '~')
