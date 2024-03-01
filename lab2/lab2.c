@@ -147,7 +147,7 @@ int main()
     fbputchar('-', SERVER_LAST_ROW  + 1, col);
   }
 
-  fbputchar('*', SERVER_LAST_ROW + 1, FIRST_COL);
+  fbputchar('*', USER_LAST_ROW + 1, FIRST_COL);
 
   // fbputs("Hello CSEE 4840 World!", 4, 10);
 
