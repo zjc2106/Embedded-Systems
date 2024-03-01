@@ -30,7 +30,7 @@
 #define USER_FIRST_ROW 21
 #define USER_LAST_ROW 22
 
-#define FIRST_COL 2
+#define FIRST_COL 0
 
 int usb_to_ascii[] = {
     0,   // 0x00
