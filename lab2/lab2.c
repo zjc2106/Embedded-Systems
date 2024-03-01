@@ -203,7 +203,10 @@ int main()
         fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
         // too make more flexible, we should shift everything from right
         if (cursor > 0) {
+          printf("strlen before delete: %d\n", strlen(user_input));
           user_input[--cursor] == '\0';
+          printf("strlen before delete: %d\n", strlen(user_input));
+
           message_length--;
 
           if (user_col == 0) {
