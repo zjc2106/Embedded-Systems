@@ -116,6 +116,8 @@ void cursor_fbputchar(char c, int row, int col) {
     (row * FONT_HEIGHT * 2 + fb_vinfo.yoffset) * fb_finfo.line_length +
     (col * FONT_WIDTH * 2 + fb_vinfo.xoffset) * BITS_PER_PIXEL / 8;
 
+
+  pixel = left;
   for (x = 0; x < FONT_WIDTH; x++){
     //draw cursor_underneath character
     pixel[0] = 255; /* Red */
