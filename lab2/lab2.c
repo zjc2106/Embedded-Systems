@@ -251,7 +251,7 @@ int main()
           fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
           if (cursor > 0) {
             // shift everything from right
-            for (int i = cursor; i < message_length; i++) {
+            for (int i = cursor-1; i < message_length; i++) {
               user_input[i] = user_input[i+1];
             }
 
