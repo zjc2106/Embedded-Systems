@@ -75,7 +75,8 @@ int usb_to_ascii[] = {
 #define ENTER 0x28
 #define EMPTY 0x00
 
-#define DELETE 0x2A
+#define BACKSPACE 0x2A
+#define SPACE 0x2C
 
 /*
  * References:
@@ -185,7 +186,7 @@ int main()
       printf("%s\n", keystate);
       // fbputs(keystate, 21, 0);
 
-      if (packet.keycode[0] == DELETE) {
+      if (packet.keycode[0] == BACKSPACE) {
         if (cursor > 0) {
           cursor--;
           if (user_col == 0) {
@@ -197,7 +198,19 @@ int main()
           user_input[cursor] = ' ';
         }
       }
-      if (packet.keycode[0] != EMPTY)
+      else if (packet.keycode[0] == SPACE) {
+        if (message_length < BUFFER_SIZE - 1) {
+          if (user_col == last_col) {
+            user_col = 0;
+            user_row++;
+          } else user_col++;
+
+          user_input[cursor++] = ' ';
+          message_length++;
+        }
+      }
+      
+      else if (packet.keycode[0] != EMPTY)
       {
         // VERY basic way to convert single keycode to char
         sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
