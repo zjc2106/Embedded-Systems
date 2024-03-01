@@ -204,7 +204,7 @@ int main()
         // too make more flexible, we should shift everything from right
         if (cursor > 0) {
           printf("strlen before delete: %d\n", strlen(user_input));
-          user_input[--cursor] == '\0';
+          user_input[--cursor] = '\0';
           printf("strlen before delete: %d\n", strlen(user_input));
 
           message_length--;
