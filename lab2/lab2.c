@@ -26,6 +26,9 @@
 #define SERVER_FIRST_ROW 1
 #define SERVER_LAST_ROW 19
 
+#define USER_FIRST_ROW 21
+#define USER_LAST_ROW 23
+
 int usb_to_ascii[] = {
     0,   // 0x00
     0,   // 0x01
@@ -58,6 +61,18 @@ int usb_to_ascii[] = {
     'y', // 0x1C
     'z'  // 0x1D
 };
+
+#define LEFT_SHIFT 0x02
+#define RIGHT_SHIFT 0x20
+
+#define IS_SHIFTED(x) (x == LEFT_SHIFT || x == RIGHT_SHIFT)
+
+#define LEFT_ARROW 0x50
+#define RIGHT_ARROW 0x4F
+#define UP_ARROW 0x52
+#define DOWN_ARROW 0x51
+
+#define ENTER 0x28
 
 /*
  * References:
@@ -142,7 +157,19 @@ int main()
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
   /* Look for and handle keypresses */
+  int user_row = USER_FIRST_ROW;
+  int user_col = 0;
+
+  int cursor = 0;
+  int message_length = 0;
+  char user_input[BUFFER_SIZE];
+  
+
   for (;;) {
+
+    fbputs(user_input, USER_FIRST_ROW, 0);
+    fbputchar('_', user_row, user_col);
+
     libusb_interrupt_transfer(keyboard, endpoint_address,
 			      (unsigned char *) &packet, sizeof(packet),
 			      &transferred, 0);
@@ -153,10 +180,44 @@ int main()
       fbputs(keystate, 21, 0);
 
       // VERY basic way to convert single keycode to char
-      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (packet.modifiers == 2 ? 'A' - 'a': 0));
+      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
       //printf("%c\n", temp_keystate);
-      fbputs(temp_keystate, 22, 0);
 
+      if (message_length < BUFFER_SIZE - 1) {
+
+        if (user_col == last_col) {
+          user_col = 0;
+          user_row++;
+        } else user_col++;
+
+        user_input[cursor++] = temp_keystate[0];
+        message_length++;
+      }
+
+      if (packet.keycode[0] == LEFT_ARROW) {
+        if (cursor > 0) {
+          cursor--;
+          user_col--;
+        }
+      }
+      if (packet.keycode[0] == RIGHT_ARROW) {
+        if (cursor < message_length) {
+          cursor++;
+          user_col++;
+        }
+      }
+      if (packet.keycode[0] == UP_ARROW) {
+        if (user_row > USER_FIRST_ROW) {
+          user_row--;
+          user_cursor = user_cursor - (last_col  + 1); // move the cursor back the length of the row
+        }
+      }
+      if (packet.keycode[0] == DOWN_ARROW) {
+        if (user_row < USER_LAST_ROW && mesage_length > (last_col  + 1)) { // can only go down if there is a row to go down to
+          user_row++;
+          user_cursor = user_cursor + (last_col  + 1); // move the cursor forward the length of the row
+        }
+      }
 
       if (packet.keycode[0] == 0x29) { /* ESC pressed? */
 	      break;
