@@ -193,6 +193,8 @@ int main()
 
         user_input[cursor++] = temp_keystate[0];
         message_length++;
+
+        printf("cursor: %d\n", cursor);
       }
 
       if (packet.keycode[0] == LEFT_ARROW) {
