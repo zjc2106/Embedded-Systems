@@ -189,7 +189,8 @@ int main()
       if (packet.keycode[0] == ENTER) {
         // send message to server
         write(sockfd, user_input, strlen(user_input));
-        memset(user_input, '\0', BUFFER_SIZE);
+        memset(user_input, ' ', BUFFER_SIZE);
+        user_input[BUFFER_SIZE - 1] = '\0';
         cursor = 0;
         message_length = 0;
         user_row = USER_FIRST_ROW;
