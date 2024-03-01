@@ -233,7 +233,7 @@ int main()
       else if (packet.keycode[0] != EMPTY)
       {
         // VERY basic way to convert single keycode to char
-        sprintf(temp_keystate, "%c", mapKeycode(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
+        sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
         //printf("%c\n", temp_keystate);
 
         if (message_length < BUFFER_SIZE - 1) {
