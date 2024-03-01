@@ -305,7 +305,7 @@ void *network_thread_f(void *ignored)
     // row = row + 1 + (strlen(recvBuf) / last_col);
 
     // when too many messages come through, clear all messages
-    if(row == 20){
+    if(row >= 20){
         // this has gotta be terribly inefficient, is there a better way?
         for (row = SERVER_FIRST_ROW; row <= SERVER_LAST_ROW; row++) {
           for (int col = 0 ; col < last_col ; col++) {
