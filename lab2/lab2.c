@@ -275,6 +275,11 @@ int main()
               user_row++;
             } else user_col++;
 
+            // shift everything from cursor to right
+            for (int i = message_length; i > cursor; i--) {
+              user_input[i] = user_input[i-1];
+            }
+
             user_input[cursor++] = ' ';
             message_length++;
           }
