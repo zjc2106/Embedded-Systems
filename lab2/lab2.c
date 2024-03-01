@@ -210,28 +210,34 @@ int main()
 
       else if (packet.keycode[0] == LEFT_ARROW) {
         if (cursor > 0) {
+          if (user_col == 0) {
+            user_col = last_col;
+            user_row--;
+          } else {
+            user_col--;
+          }
           cursor--;
-          user_col--;
         }
       }
-      if (packet.keycode[0] == RIGHT_ARROW) {
-        if (cursor < message_length) {
-          cursor++;
-          user_col++;
-        }
-      }
-      if (packet.keycode[0] == UP_ARROW) {
-        if (user_row > USER_FIRST_ROW) {
-          user_row--;
-          cursor = cursor - (last_col  + 1); // move the cursor back the length of the row
-        }
-      }
-      if (packet.keycode[0] == DOWN_ARROW) {
-        if (user_row < USER_LAST_ROW && message_length > (last_col  + 1)) { // can only go down if there is a row to go down to
-          user_row++;
-          cursor = cursor + (last_col  + 1); // move the cursor forward the length of the row
-        }
-      }
+
+      // else if (packet.keycode[0] == RIGHT_ARROW) {
+      //   if (cursor < message_length) {
+      //     cursor++;
+      //     user_col++;
+      //   }
+      // }
+      // else if (packet.keycode[0] == UP_ARROW) {
+      //   if (user_row > USER_FIRST_ROW) {
+      //     user_row--;
+      //     cursor = cursor - (last_col  + 1); // move the cursor back the length of the row
+      //   }
+      // }
+      // else if (packet.keycode[0] == DOWN_ARROW) {
+      //   if (user_row < USER_LAST_ROW && message_length > (last_col  + 1)) { // can only go down if there is a row to go down to
+      //     user_row++;
+      //     cursor = cursor + (last_col  + 1); // move the cursor forward the length of the row
+      //   }
+      // }
 
       else if (packet.keycode[0] == ENTER) {
         // send message to server
