@@ -30,7 +30,7 @@
 #define USER_FIRST_ROW 21
 #define USER_LAST_ROW 22
 
-#define FIRST_COL 0
+#define FIRST_COL 2
 
 int usb_to_ascii[] = {
     0,   // 0x00
@@ -356,11 +356,11 @@ void *network_thread_f(void *ignored)
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s\n", recvBuf);
-    if (strlen(recvBuf) / (last_col + 1) + row > last_row) {
+    if (strlen(recvBuf) / (last_col - FIRST_COL 1) + row > last_row) {
       fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
       row = SERVER_FIRST_ROW;
     }
-    row = fbputs(recvBuf, row, 0)  + 1;
+    row = fbputs(recvBuf, row, FIRST_COL)  + 1;
     // row = row + 1 + (strlen(recvBuf) / last_col);
 
     // when too many messages come through, clear all messages
