@@ -292,7 +292,7 @@ int main()
         sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
         //printf("%c\n", temp_keystate);
 
-        if (message_length < BUFFER_SIZE - 1) {
+        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
 
           if (user_col >= last_col) {
             user_col = 0;
