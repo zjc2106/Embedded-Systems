@@ -209,13 +209,13 @@ int main()
       if (packet.keycode[0] == UP_ARROW) {
         if (user_row > USER_FIRST_ROW) {
           user_row--;
-          user_cursor = user_cursor - (last_col  + 1); // move the cursor back the length of the row
+          cursor = cursor - (last_col  + 1); // move the cursor back the length of the row
         }
       }
       if (packet.keycode[0] == DOWN_ARROW) {
-        if (user_row < USER_LAST_ROW && mesage_length > (last_col  + 1)) { // can only go down if there is a row to go down to
+        if (user_row < USER_LAST_ROW && message_length > (last_col  + 1)) { // can only go down if there is a row to go down to
           user_row++;
-          user_cursor = user_cursor + (last_col  + 1); // move the cursor forward the length of the row
+          cursor = cursor + (last_col  + 1); // move the cursor forward the length of the row
         }
       }
 
