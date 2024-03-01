@@ -92,6 +92,8 @@ char mapCharacter(int keycode, int shift) {
             return !shift ? '.' : '>';
         case 0x38:
             return !shift ? '/' : '?'; 
+        default :
+            return 0;
     }
 
 }
