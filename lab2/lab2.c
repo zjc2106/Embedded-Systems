@@ -266,11 +266,14 @@ int main()
         fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
         // too make more flexible, we should shift everything from right
         if (cursor > 0) {
-          printf("strlen before delete: %d\n", strlen(user_input));
-          user_input[--cursor] = '\0';
-          printf("strlen before delete: %d\n", strlen(user_input));
+          // shift everything from right
+          for (int i = cursor; i < message_length; i++) {
+            user_input[i] = user_input[i+1];
+          }
 
+          cursor--;
           message_length--;
+          user_input[message_length] = '\0';
 
           if (user_col == 0) {
             user_col = last_col;
