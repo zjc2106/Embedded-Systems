@@ -116,43 +116,32 @@ void cursor_fbputchar(char c, int row, int col) {
     (row * FONT_HEIGHT * 2 + fb_vinfo.yoffset) * fb_finfo.line_length +
     (col * FONT_WIDTH * 2 + fb_vinfo.xoffset) * BITS_PER_PIXEL / 8;
 
-
-  pixel = left;
-  for (x = 0; x < FONT_WIDTH; x++){
-    //draw cursor_underneath character
-    pixel[0] = 255; /* Red */
-    pixel[1] = 255; /* Green */
-    pixel[2] = 255; /* Blue */
-    pixel[3] = 0;
-    pixel += 4;
-  }
-
   for (y = 0 ; y < FONT_HEIGHT * 2 ; y++, left += fb_finfo.line_length) {
     pixels = *pixelp;
     pixel = left;
     mask = 0x80;
     for (x = 0 ; x < FONT_WIDTH ; x++) {
       if (pixels & mask) {	
-	pixel[0] = 255; /* Red */
-        pixel[1] = 255; /* Green */
-        pixel[2] = 255; /* Blue */
+	      pixel[0] = 0; /* Red */
+        pixel[1] = 0; /* Green */
+        pixel[2] = 0; /* Blue */
         pixel[3] = 0;
       } else {
-	pixel[0] = 0;
-        pixel[1] = 0;
-        pixel[2] = 0;
+	      pixel[0] = 255;
+        pixel[1] = 255;
+        pixel[2] = 255;
         pixel[3] = 0;
       }
       pixel += 4;
       if (pixels & mask) {
-	pixel[0] = 255; /* Red */
-        pixel[1] = 255; /* Green */
-        pixel[2] = 255; /* Blue */
+	      pixel[0] = 0; /* Red */
+        pixel[1] = 0; /* Green */
+        pixel[2] = 0; /* Blue */
         pixel[3] = 0;
       } else {
-	pixel[0] = 0;
-        pixel[1] = 0;
-        pixel[2] = 0;
+	      pixel[0] = 255;
+        pixel[1] = 255;
+        pixel[2] = 255;
         pixel[3] = 0;
       }
       pixel += 4;
