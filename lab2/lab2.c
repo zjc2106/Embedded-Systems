@@ -105,7 +105,7 @@ void *network_thread_f(void *);
 
 void clear_user_input(char *user_input, int *cursor, int *message_length, int *user_row, int *user_col) {
   *user_row = USER_FIRST_ROW;
-  *user_col = 0;
+  *user_col = FIRST_COL;
 
   *cursor = 0;
   *message_length = 0;
@@ -193,8 +193,8 @@ int main()
 
   for (;;) {
 
-    fbputs(clear_input, USER_FIRST_ROW, 0);
-    fbputs(user_input, USER_FIRST_ROW, 0);
+    fbputs(clear_input, USER_FIRST_ROW, FIRST_COL);
+    fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
     
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
 
