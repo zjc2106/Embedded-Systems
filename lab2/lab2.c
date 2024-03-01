@@ -202,7 +202,7 @@ int main()
       // fbputs(keystate, 21, 0);
 
 
-      if (IS_CTRL(packet.modifiers) && packet.keycode[0] == 0x29) {
+      if (IS_CTRL(packet.modifiers)) {
         if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u') {
           clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
         }
