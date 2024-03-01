@@ -356,7 +356,7 @@ void *network_thread_f(void *ignored)
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s\n", recvBuf);
-    if (strlen(recvBuf) / (last_col - FIRST_COL 1) + row > last_row) {
+    if (strlen(recvBuf) / (last_col - FIRST_COL + 1) + row > last_row) {
       fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
       row = SERVER_FIRST_ROW;
     }
