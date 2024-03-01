@@ -27,7 +27,7 @@
 #define SERVER_LAST_ROW 19
 
 #define USER_FIRST_ROW 21
-#define USER_LAST_ROW 23
+#define USER_LAST_ROW 22
 
 int usb_to_ascii[] = {
     0,   // 0x00

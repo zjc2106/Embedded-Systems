@@ -176,8 +176,8 @@ int fbputs(const char *s, int row, int col)
 }
 
 void fbclearrows(int start, int end) {
- for (row = start; row <= end; row++) {
-    for (int col = 0 ; col < LAST_COL ; col++) {
+ for (int row = start; row <= end; row++) {
+    for (int col = 0 ; col <= LAST_COL ; col++) {
       fbputchar(' ', row, col);
     }
   }
