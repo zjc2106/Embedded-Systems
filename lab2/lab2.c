@@ -193,6 +193,8 @@ int main()
   memset(clear_input, ' ', BUFFER_SIZE);
   clear_input[BUFFER_SIZE - 1] = '\0';
 
+  int prev_keycode = EMPTY;
+
   for (;;) {
 
     // fbputs(clear_input, USER_FIRST_ROW, FIRST_COL);
@@ -211,128 +213,103 @@ int main()
       printf("%s\n", keystate);
       // fbputs(keystate, 21, 0);
 
+      if (packet.keycode[0] != prev_keycode){
+        if (IS_CTRL(packet.modifiers)) {
+          if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u') {
+            clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
+          }
+        }
 
-      if (IS_CTRL(packet.modifiers)) {
-        if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u') {
+        else if (packet.keycode[0] == LEFT_ARROW) {
+          if (cursor > 0) {
+            if (user_col == FIRST_COL) {
+              user_col = last_col;
+              user_row--;
+            } else user_col--;
+            cursor--;
+          }
+        }
+
+        else if (packet.keycode[0] == RIGHT_ARROW) {
+          if (cursor < message_length) {
+            if (user_col == last_col) {
+              user_col = FIRST_COL;
+              user_row++;
+            } else user_col++;
+
+            cursor++;
+          }
+        }
+
+        else if (packet.keycode[0] == ENTER) {
+          // send message to server
+          write(sockfd, user_input, strlen(user_input));
           clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
         }
-      }
 
-      else if (packet.keycode[0] == LEFT_ARROW) {
-        if (cursor > 0) {
-          if (user_col == FIRST_COL) {
-            user_col = last_col;
-            user_row--;
-          } else user_col--;
-          cursor--;
-        }
-      }
+        else if (packet.keycode[0] == BACKSPACE) {
+          fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
+          if (cursor > 0) {
+            // shift everything from right
+            for (int i = cursor; i < message_length; i++) {
+              user_input[i] = user_input[i+1];
+            }
 
-      else if (packet.keycode[0] == RIGHT_ARROW) {
-        if (cursor < message_length) {
-          if (user_col == last_col) {
-            user_col = FIRST_COL;
-            user_row++;
-          } else user_col++;
+            cursor--;
+            message_length--;
+            user_input[message_length] = '\0';
 
-          cursor++;
-        }
-      }
-      // else if (packet.keycode[0] == UP_ARROW) {
-      //   if (user_row > USER_FIRST_ROW) {
-      //     user_row--;
-      //     cursor = cursor - (last_col  + 1); // move the cursor back the length of the row
-      //   }
-      // }
-      // else if (packet.keycode[0] == DOWN_ARROW) {
-      //   if (user_row < USER_LAST_ROW && message_length > (last_col  + 1)) { // can only go down if there is a row to go down to
-      //     user_row++;
-      //     cursor = cursor + (last_col  + 1); // move the cursor forward the length of the row
-      //   }
-      // }
+            if (user_col == FIRST_COL) {
+              user_col = last_col;
+              user_row--;
+            } else user_col--;
 
-      else if (packet.keycode[0] == ENTER) {
-        // send message to server
-        write(sockfd, user_input, strlen(user_input));
-        
-        // user_row = USER_FIRST_ROW;
-        // user_col = 0;
-
-        // cursor = 0;
-        // message_length = 0;
-        // memset(user_input, '\0', BUFFER_SIZE);
-
-        // fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
-
-        clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
-
-      }
-      else if (packet.keycode[0] == BACKSPACE) {
-        fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
-        // too make more flexible, we should shift everything from right
-        if (cursor > 0) {
-          // shift everything from right
-          for (int i = cursor; i < message_length; i++) {
-            user_input[i] = user_input[i+1];
+            fbputchar(' ', user_row, user_col); // clear deleted character
+            
           }
-
-          cursor--;
-          message_length--;
-          user_input[message_length] = '\0';
-
-          if (user_col == FIRST_COL) {
-            user_col = last_col;
-            user_row--;
-          } else user_col--;
-
-          fbputchar(' ', user_row, user_col); // clear deleted character
-          
         }
-      }
-      else if (packet.keycode[0] == SPACE) {
-        if (message_length < BUFFER_SIZE - 1) {
-          if (user_col >= last_col) {
-            user_col = FIRST_COL;
-            user_row++;
-          } else user_col++;
+        else if (packet.keycode[0] == SPACE) {
+          if (message_length < BUFFER_SIZE - 1) {
+            if (user_col >= last_col) {
+              user_col = FIRST_COL;
+              user_row++;
+            } else user_col++;
 
-          user_input[cursor++] = ' ';
-          message_length++;
+            user_input[cursor++] = ' ';
+            message_length++;
+          }
         }
-      }
 
-      else if (packet.keycode[0] != EMPTY)
-      {
-        // VERY basic way to convert single keycode to char
-        sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
-        //printf("%c\n", temp_keystate);
+        else if (packet.keycode[0] != EMPTY)
+        {
+          // VERY basic way to convert single keycode to char
+          sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
+          //printf("%c\n", temp_keystate);
 
-        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
+          if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
 
-          if (user_col >= last_col) {
-            user_col = FIRST_COL;
-            user_row++;
-          } else user_col++;
+            if (user_col >= last_col) {
+              user_col = FIRST_COL;
+              user_row++;
+            } else user_col++;
 
-          user_input[cursor++] = temp_keystate[0];
-          message_length++;
+            user_input[cursor++] = temp_keystate[0];
+            message_length++;
 
-          printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
+            printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
+          }
         }
+
+
+
+        if (packet.keycode[0] == 0x29) { /* ESC pressed? */
+          break;
+        }
+
       }
+      prev_keycode = packet.keycode[0];
 
 
-
-      if (packet.keycode[0] == 0x29) { /* ESC pressed? */
-	      break;
-      }
-
-      /* RET pressed?
-      if (packet.keycode[0] == 0x28) {
-        // implement sending message here
-      }
-      */
-    //  prev_keycode = packet.keycode[0];
     }
   }
 
