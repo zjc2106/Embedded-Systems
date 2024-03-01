@@ -68,6 +68,11 @@ int usb_to_ascii[] = {
 
 #define IS_SHIFTED(x) (x == LEFT_SHIFT || x == RIGHT_SHIFT)
 
+#define LEFT_CTRL 0x01
+#define RIGHT_CTRL 0x10
+
+#define IS_CTRL(x) (x == LEFT_CTRL || x == RIGHT_CTRL)
+
 #define LEFT_ARROW 0x50
 #define RIGHT_ARROW 0x4F
 #define UP_ARROW 0x52
@@ -95,6 +100,17 @@ uint8_t endpoint_address;
 
 pthread_t network_thread;
 void *network_thread_f(void *);
+
+void clear_user_input(char *user_input, int *cursor, int *message_length, int *user_row, int *user_col) {
+  *user_row = USER_FIRST_ROW;
+  *user_col = 0;
+
+  *cursor = 0;
+  *message_length = 0;
+  memset(user_input, '\0', BUFFER_SIZE);
+
+  fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+}
 
 int main()
 {
@@ -185,18 +201,26 @@ int main()
       printf("%s\n", keystate);
       // fbputs(keystate, 21, 0);
 
-      if (packet.keycode[0] == ENTER) {
+
+      if (IS_CTRL(packet.modifiers) && packet.keycode[0] == 0x29) {
+        if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u') {
+          clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
+        }
+      }
+      else if (packet.keycode[0] == ENTER) {
         // send message to server
         write(sockfd, user_input, strlen(user_input));
         
-        user_row = USER_FIRST_ROW;
-        user_col = 0;
+        // user_row = USER_FIRST_ROW;
+        // user_col = 0;
 
-        cursor = 0;
-        message_length = 0;
-        memset(user_input, '\0', BUFFER_SIZE);
+        // cursor = 0;
+        // message_length = 0;
+        // memset(user_input, '\0', BUFFER_SIZE);
 
-        fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+        // fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+
+        clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
 
       }
       else if (packet.keycode[0] == BACKSPACE) {
