@@ -171,7 +171,7 @@ int main()
   for (;;) {
 
     fbputs(user_input, USER_FIRST_ROW, 0);
-    // fbputchar('_', user_row, user_col);
+    cursor_fbputchar(user_input[cursor], user_row, user_col);
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
 			      (unsigned char *) &packet, sizeof(packet),
