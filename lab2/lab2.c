@@ -187,6 +187,7 @@ int main()
       // fbputs(keystate, 21, 0);
 
       if (packet.keycode[0] == BACKSPACE) {
+        user_input[cursor] = ' ';
         if (cursor > 0) {
           cursor--;
           if (user_col == 0) {
@@ -209,7 +210,7 @@ int main()
           message_length++;
         }
       }
-      
+
       else if (packet.keycode[0] != EMPTY)
       {
         // VERY basic way to convert single keycode to char
