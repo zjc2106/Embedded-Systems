@@ -222,7 +222,7 @@ int main()
 
         else if (packet.keycode[0] == LEFT_ARROW) {
           if (cursor > 0) {
-            if (user_col == FIRST_COL) {
+            if (user_col <= FIRST_COL) {
               user_col = last_col;
               user_row--;
             } else user_col--;
