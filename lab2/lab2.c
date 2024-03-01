@@ -187,15 +187,7 @@ int main()
       printf("%s\n", user_input);
       printf("%02x %02x %02x", packet.modifiers, packet.keycode[0], packet.keycode[1]);
 
-      if (packet.keycode[0] == RELEASE && temp_keystate[0] != '\0')
-      { // on RELEASE event add previous key to user_input
-        if (message_length <= BUFFER_SIZE - 1) {
-          user_input[cursor++] = temp_keystate[0];
-          message_length++;
-        }
-      }
-
-      else if (IS_CTRL(packet.modifiers))
+      if (IS_CTRL(packet.modifiers))
       {
         if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u')
           clear_user_input(user_input, &cursor, &message_length);
@@ -224,6 +216,15 @@ int main()
 
       else if (packet.keycode[0] == ESCAPE)
         break;
+
+      if (packet.keycode[0] == RELEASE && temp_keystate[0] != '\0')
+      { // on RELEASE event add previous key to user_input
+        if (message_length < BUFFER_SIZE - 1) {
+          for (int i = message_length-1; i >= cursor; i++) user_input[i] = user_input[i+1];
+          user_input[cursor++] = temp_keystate[0];
+          user_input[++message_length] = '\0';
+        }
+      }
 
       else
         sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
