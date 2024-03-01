@@ -29,41 +29,14 @@
 
 #define USER_FIRST_ROW 21
 #define USER_LAST_ROW 22
+#define NUM_USER_ROWS (USER_LAST_ROW - USER_FIRST_ROW + 1)
 
 #define FIRST_COL 0
+#define LAST_COL 63
+#define LINE_WIDTH (LAST_COL - FIRST_COL + 1)
 
-int usb_to_ascii[] = {
-    0,   // 0x00
-    0,   // 0x01
-    0,   // 0x02
-    0,   // 0x03
-    'a', // 0x04
-    'b', // 0x05
-    'c', // 0x06
-    'd', // 0x07
-    'e', // 0x08
-    'f', // 0x09
-    'g', // 0x0A
-    'h', // 0x0B
-    'i', // 0x0C
-    'j', // 0x0D
-    'k', // 0x0E
-    'l', // 0x0F
-    'm', // 0x10
-    'n', // 0x11
-    'o', // 0x12
-    'p', // 0x13
-    'q', // 0x14
-    'r', // 0x15
-    's', // 0x16
-    't', // 0x17
-    'u', // 0x18
-    'v', // 0x19
-    'w', // 0x1A
-    'x', // 0x1B
-    'y', // 0x1C
-    'z'  // 0x1D
-};
+#define CURSOR_COL(x) (x % LINE_WIDTH + FIRST_COL)
+#define CURSOR_ROW(x) (x / LINE_WIDTH + USER_FIRST_ROW)
 
 #define LEFT_SHIFT 0x02
 #define RIGHT_SHIFT 0x20
@@ -75,16 +48,17 @@ int usb_to_ascii[] = {
 
 #define IS_CTRL(x) (x == LEFT_CTRL || x == RIGHT_CTRL)
 
+// non printable keystrokes
 #define LEFT_ARROW 0x50
 #define RIGHT_ARROW 0x4F
 #define UP_ARROW 0x52
 #define DOWN_ARROW 0x51
 
 #define ENTER 0x28
-#define EMPTY 0x00
+#define RELEASE 0x00
+#define ESCAPE 0x29
 
 #define BACKSPACE 0x2A
-#define SPACE 0x2C
 
 /*
  * References:
@@ -103,14 +77,11 @@ uint8_t endpoint_address;
 pthread_t network_thread;
 void *network_thread_f(void *);
 
-void clear_user_input(char *user_input, int *cursor, int *message_length, int *user_row, int *user_col) {
-  *user_row = USER_FIRST_ROW;
-  *user_col = FIRST_COL;
-
+void clear_user_input(char *user_input, int *cursor, int *message_length)
+{
   *cursor = 0;
   *message_length = 0;
   memset(user_input, '\0', BUFFER_SIZE);
-
   fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
 }
 
@@ -131,20 +102,20 @@ int main()
   // testing var used for keyboard input
   char temp_keystate[1];
 
-
-  if ((err = fbopen()) != 0) {
+  if ((err = fbopen()) != 0)
+  {
     fprintf(stderr, "Error: Could not open framebuffer: %d\n", err);
     exit(1);
   }
 
-
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = FIRST_COL ; col < last_col ; col++) {
+  for (col = FIRST_COL; col < last_col; col++)
+  {
     fbputchar('*', SERVER_FIRST_ROW - 1, col);
     fbputchar('*', 23, col);
-    fbputchar('-', SERVER_LAST_ROW  + 1, col);
+    fbputchar('-', SERVER_LAST_ROW + 1, col);
   }
 
   fbputchar('*', USER_LAST_ROW + 1, FIRST_COL);
@@ -152,13 +123,15 @@ int main()
   // fbputs("Hello CSEE 4840 World!", 4, 10);
 
   /* Open the keyboard */
-  if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
+  if ((keyboard = openkeyboard(&endpoint_address)) == NULL)
+  {
     fprintf(stderr, "Did not find a keyboard\n");
     exit(1);
   }
-    
+
   /* Create a TCP communications socket */
-  if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+  if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+  {
     fprintf(stderr, "Error: Could not create socket\n");
     exit(1);
   }
@@ -167,13 +140,15 @@ int main()
   memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(SERVER_PORT);
-  if ( inet_pton(AF_INET, SERVER_HOST, &serv_addr.sin_addr) <= 0) {
+  if (inet_pton(AF_INET, SERVER_HOST, &serv_addr.sin_addr) <= 0)
+  {
     fprintf(stderr, "Error: Could not convert host IP \"%s\"\n", SERVER_HOST);
     exit(1);
   }
 
   /* Connect the socket to the server */
-  if ( connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+  if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+  {
     fprintf(stderr, "Error: connect() failed.  Is the server running?\n");
     exit(1);
   }
@@ -182,144 +157,76 @@ int main()
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
   /* Look for and handle keypresses */
-  int user_row = USER_FIRST_ROW;
-  int user_col = FIRST_COL;
 
   int cursor = 0;
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
-  char clear_input[BUFFER_SIZE];
-  memset(clear_input, ' ', BUFFER_SIZE);
-  clear_input[BUFFER_SIZE - 1] = '\0';
-
   int prev_keycode = EMPTY;
 
-  for (;;) {
+  int user_row = USER_FIRST_ROW;
+  int user_col = FIRST_COL;
 
-    // fbputs(clear_input, USER_FIRST_ROW, FIRST_COL);
+  for (;;)
+  {
     fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
     fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
-    
+
+    user_row = cursor / NUM_COLS + USER_FIRST_ROW;
+    user_col = cursor % NUM_COLS + FIRST_COL;
+
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
-			      (unsigned char *) &packet, sizeof(packet),
-			      &transferred, 0);
-    if (transferred == sizeof(packet)) {
+                              (unsigned char *)&packet, sizeof(packet),
+                              &transferred, 0);
+
+    if (transferred == sizeof(packet))
+    {
+      // print incoming keyboard packet
       printf("%s\n", user_input);
-      sprintf(keystate, "%02x %02x %02x", packet.modifiers, packet.keycode[0],
-	      packet.keycode[1]);
-      printf("%s\n", keystate);
-      // fbputs(keystate, 21, 0);
+      printf("%02x %02x %02x", packet.modifiers, packet.keycode[0], packet.keycode[1]);
 
-      if (packet.keycode[0] != prev_keycode){
-        if (IS_CTRL(packet.modifiers)) {
-          if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u') {
-            clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
-          }
+      if (packet.keycode[0] == RELEASE && temp_keystate[0] != '\0')
+      { // on RELEASE event add previous key to user_input
+        if (message_length <= BUFFER_SIZE - 1) {
+          user_input[cursor++] = temp_keystate[0];
+          message_length++;
         }
-
-        else if (packet.keycode[0] == LEFT_ARROW) {
-          if (cursor > 0) {
-            if (user_col == FIRST_COL) {
-              user_col = last_col -1 ;
-              user_row--;
-            } else user_col--;
-            cursor--;
-          }
-        }
-
-        else if (packet.keycode[0] == RIGHT_ARROW) {
-          if (cursor < message_length) {
-            if (user_col == last_col) {
-              user_col = FIRST_COL;
-              user_row++;
-            } else user_col++;
-
-            cursor++;
-          }
-        }
-
-        else if (packet.keycode[0] == ENTER) {
-          // send message to server
-          write(sockfd, user_input, strlen(user_input));
-          clear_user_input(user_input, &cursor, &message_length, &user_row, &user_col);
-        }
-
-        else if (packet.keycode[0] == BACKSPACE) {
-          fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
-          if (cursor > 0) {
-            // shift everything from right
-            for (int i = cursor-1; i < message_length; i++) {
-              user_input[i] = user_input[i+1];
-            }
-
-            cursor--;
-            message_length--;
-            user_input[message_length] = '\0';
-
-            if (user_col == FIRST_COL) {
-              user_col = last_col;
-              user_row--;
-            } else user_col--;
-
-            fbputchar(' ', user_row, user_col); // clear deleted character
-            
-          }
-        }
-        else if (packet.keycode[0] == SPACE) {
-          if (message_length < BUFFER_SIZE - 1) {
-            if (user_col >= last_col) {
-              user_col = FIRST_COL;
-              user_row++;
-            } else user_col++;
-
-            // shift everything from cursor to right
-            for (int i = message_length; i > cursor; i--) {
-              user_input[i] = user_input[i-1];
-            }
-
-            user_input[cursor++] = ' ';
-            message_length++;
-          }
-        }
-
-        else if (packet.keycode[0] != EMPTY)
-        {
-          // VERY basic way to convert single keycode to char
-          sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
-          //printf("%c\n", temp_keystate);
-
-          if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
-
-
-            if (user_col >= last_col - 1 && (user_row != USER_LAST_ROW)) {
-              user_col = FIRST_COL;
-              user_row++;
-            } else user_col++;
-            
-            // shift everything from cursor to right
-            for (int i = message_length; i > cursor; i--) {
-              user_input[i] = user_input[i-1];
-            }
-            user_input[cursor++] = temp_keystate[0];
-            message_length++;
-
-            printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
-          }
-        }
-
-
-
-        if (packet.keycode[0] == 0x29) { /* ESC pressed? */
-          break;
-        }
-
       }
-      prev_keycode = packet.keycode[0];
 
+      else if (IS_CTRL(packet.modifiers))
+      {
+        if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u')
+          clear_user_input(user_input, &cursor, &message_length);
+      }
 
+      else if (packet.keycode[0] == LEFT_ARROW && cursor > 0)
+        cursor--;
+
+      else if (packet.keycode[0] == RIGHT_ARROW && cursor < message_length)
+        cursor++;
+
+      else if (packet.keycode[0] == ENTER)
+      {
+        write(sockfd, user_input, strlen(user_input)); // send message to server
+        clear_user_input(user_input, &cursor, &message_length);
+      }
+
+      else if (packet.keycode[0] == BACKSPACE && cursor > 0)
+      {
+        for (int i = cursor; i < message_length; i++)
+          user_input[i - 1] = user_input[i];
+
+        user_input[message_length--] = '\0';
+        cursor--;
+      }
+
+      else if (packet.keycode[0] == ESCAPE)
+        break;
+
+      else
+        sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
     }
   }
 
@@ -337,30 +244,18 @@ void *network_thread_f(void *ignored)
   char recvBuf[BUFFER_SIZE];
   int n;
 
-  // get last visible row and col of screen
-  // int last_row = getLastRow();
-  int last_col = getLastCol();
-
-  int row = SERVER_FIRST_ROW; // row in which messages begin on
-  /* Receive data */
-  while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
+  int row = SERVER_FIRST_ROW;
+  while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0)
+  {
     recvBuf[n] = '\0';
     printf("%s\n", recvBuf);
-    if (strlen(recvBuf) / (last_col - FIRST_COL + 1) + row > SERVER_LAST_ROW) {
+    if ((strlen(recvBuf) / LINE_WIDTH) + row > SERVER_LAST_ROW)
+    {
       fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
       row = SERVER_FIRST_ROW;
     }
-    row = fbputs(recvBuf, row, FIRST_COL)  + 1;
-    // row = row + 1 + (strlen(recvBuf) / last_col);
-
-    // when too many messages come through, clear all messages
-    if(row >= 20){
-        // this has gotta be terribly inefficient, is there a better way?
-        fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
-      row = SERVER_FIRST_ROW;
-    }
+    row = fbputs(recvBuf, row, FIRST_COL) + 1;
   }
 
   return NULL;
 }
-

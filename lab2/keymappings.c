@@ -86,12 +86,16 @@ char mapCharacter(int keycode, int shift) {
             return !shift ? ';' : ':';
         case 0x34:
             return !shift ? '\'' : '"';
+        case 0x35:
+            return !shift ? '`' : '~'; 
         case 0x36:
             return !shift ? ',' : '<';
         case 0x37:
             return !shift ? '.' : '>';
         case 0x38:
             return !shift ? '/' : '?'; 
+        case 0x2c:
+            return !shift ? ' ' : ' ';
         default :
             return 0;
     }
