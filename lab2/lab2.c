@@ -195,7 +195,8 @@ int main()
 
   for (;;) {
 
-    fbputs(clear_input, USER_FIRST_ROW, FIRST_COL);
+    // fbputs(clear_input, USER_FIRST_ROW, FIRST_COL);
+    fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
     fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
     
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
