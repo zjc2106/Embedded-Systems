@@ -195,6 +195,7 @@ int main()
         message_length++;
 
         printf("cursor: %d\n", cursor);
+        printf("user_input[%d]: %d", cursor-1, user_input[cursor-1]);
       }
 
       if (packet.keycode[0] == LEFT_ARROW) {
