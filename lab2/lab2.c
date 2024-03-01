@@ -189,24 +189,28 @@ int main()
       if (packet.keycode[0] == ENTER) {
         // send message to server
         write(sockfd, user_input, strlen(user_input));
+        
         memset(user_input, '\0', BUFFER_SIZE);
-        fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
         cursor = 0;
         message_length = 0;
         user_row = USER_FIRST_ROW;
         user_col = 0;
+
+        fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+
       }
       else if (packet.keycode[0] == BACKSPACE) {
-        user_input[cursor] = ' ';
+        fbputchar(' ', user_row, user_col); // clear currently displayed cursor 
+        // too make more flexible, we should shift everything from right
         if (cursor > 0) {
-          cursor--;
+          user_input[--cursor] == '\0';
+          message_length--;
+
           if (user_col == 0) {
             user_col = last_col;
             user_row--;
           } else user_col--;
           
-          message_length--;
-          user_input[cursor] = ' ';
         }
       }
       else if (packet.keycode[0] == SPACE) {
