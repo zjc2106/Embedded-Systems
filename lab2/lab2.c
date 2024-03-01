@@ -168,7 +168,6 @@ int main()
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
-  uint8_t prev_keycode = 0;
 
   for (;;) {
 
@@ -230,7 +229,7 @@ int main()
         }
       }
 
-      else if (packet.keycode[0] != EMPTY && packet.keycode[0] != prev_keycode)
+      else if (packet.keycode[0] != EMPTY)
       {
         // VERY basic way to convert single keycode to char
         sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
@@ -284,7 +283,7 @@ int main()
         // implement sending message here
       }
       */
-     prev_keycode = packet.keycode[0];
+    //  prev_keycode = packet.keycode[0];
     }
   }
 
