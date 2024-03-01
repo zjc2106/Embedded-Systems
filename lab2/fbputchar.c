@@ -162,7 +162,7 @@ int fbputs(const char *s, int row, int col)
   int origCol = col; 
   while ((c = *s++) != 0) {
     // wraparound check
-    if(col > LAST_COL || c == '\n'){
+    if(col >= LAST_COL || c == '\n'){
       row+=1;
       col = origCol;
     }
