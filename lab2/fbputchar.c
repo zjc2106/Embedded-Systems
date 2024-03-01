@@ -34,7 +34,7 @@ static unsigned char font[];
 
 // zac variables
 // last visible column on the screen
-#define LAST_COL (fb_vinfo.xres / FONT_WIDTH) - 1
+#define LAST_COL 64
 
 /*
  * Open the framebuffer to prepare it to be written to.  Returns 0 on success
