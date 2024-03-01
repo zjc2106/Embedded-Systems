@@ -30,6 +30,8 @@
 #define USER_FIRST_ROW 21
 #define USER_LAST_ROW 22
 
+#define FIRST_COL 1
+
 int usb_to_ascii[] = {
     0,   // 0x00
     0,   // 0x01
@@ -139,7 +141,7 @@ int main()
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = 0 ; col < last_col ; col++) {
+  for (col = FIRST_COL ; col < last_col ; col++) {
     fbputchar('*', SERVER_FIRST_ROW - 1, col);
     fbputchar('*', 23, col);
     fbputchar('-', SERVER_LAST_ROW  + 1, col);
@@ -179,7 +181,7 @@ int main()
 
   /* Look for and handle keypresses */
   int user_row = USER_FIRST_ROW;
-  int user_col = 0;
+  int user_col = FIRST_COL;
 
   int cursor = 0;
   int message_length = 0;
@@ -215,7 +217,7 @@ int main()
 
       else if (packet.keycode[0] == LEFT_ARROW) {
         if (cursor > 0) {
-          if (user_col == 0) {
+          if (user_col == FIRST_COL) {
             user_col = last_col;
             user_row--;
           } else user_col--;
@@ -226,7 +228,7 @@ int main()
       else if (packet.keycode[0] == RIGHT_ARROW) {
         if (cursor < message_length) {
           if (user_col == last_col) {
-            user_col = 0;
+            user_col = FIRST_COL;
             user_row++;
           } else user_col++;
 
@@ -275,7 +277,7 @@ int main()
           message_length--;
           user_input[message_length] = '\0';
 
-          if (user_col == 0) {
+          if (user_col == FIRST_COL) {
             user_col = last_col;
             user_row--;
           } else user_col--;
@@ -287,7 +289,7 @@ int main()
       else if (packet.keycode[0] == SPACE) {
         if (message_length < BUFFER_SIZE - 1) {
           if (user_col >= last_col) {
-            user_col = 0;
+            user_col = FIRST_COL;
             user_row++;
           } else user_col++;
 
@@ -305,7 +307,7 @@ int main()
         if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0) {
 
           if (user_col >= last_col) {
-            user_col = 0;
+            user_col = FIRST_COL;
             user_row++;
           } else user_col++;
 
