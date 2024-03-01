@@ -168,8 +168,7 @@ int main()
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
-  // memset(user_input, ' ', BUFFER_SIZE);
-  // user_input[BUFFER_SIZE - 1] = '\0';
+  uint8_t prev_keycode = 0;
 
   for (;;) {
 
@@ -190,11 +189,12 @@ int main()
         // send message to server
         write(sockfd, user_input, strlen(user_input));
         
-        memset(user_input, '\0', BUFFER_SIZE);
-        cursor = 0;
-        message_length = 0;
         user_row = USER_FIRST_ROW;
         user_col = 0;
+
+        cursor = 0;
+        message_length = 0;
+        memset(user_input, '\0', BUFFER_SIZE);
 
         fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
 
@@ -230,7 +230,7 @@ int main()
         }
       }
 
-      else if (packet.keycode[0] != EMPTY)
+      else if (packet.keycode[0] != EMPTY && packet.keycode[0] != prev_keycode)
       {
         // VERY basic way to convert single keycode to char
         sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
@@ -284,6 +284,7 @@ int main()
         // implement sending message here
       }
       */
+     prev_keycode = packet.keycode[0];
     }
   }
 
