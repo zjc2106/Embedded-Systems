@@ -220,7 +220,7 @@ int main()
       }
       else if (packet.keycode[0] == SPACE) {
         if (message_length < BUFFER_SIZE - 1) {
-          if (user_col == last_col) {
+          if (user_col >= last_col) {
             user_col = 0;
             user_row++;
           } else user_col++;
@@ -238,7 +238,7 @@ int main()
 
         if (message_length < BUFFER_SIZE - 1) {
 
-          if (user_col == last_col) {
+          if (user_col >= last_col) {
             user_col = 0;
             user_row++;
           } else user_col++;
