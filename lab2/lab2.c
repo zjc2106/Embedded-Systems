@@ -73,6 +73,7 @@ int usb_to_ascii[] = {
 #define DOWN_ARROW 0x51
 
 #define ENTER 0x28
+#define EMPTY 0x00
 
 /*
  * References:
@@ -182,22 +183,24 @@ int main()
       printf("%s\n", keystate);
       // fbputs(keystate, 21, 0);
 
-      // VERY basic way to convert single keycode to char
-      sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
-      //printf("%c\n", temp_keystate);
+      if (packet.keycode[0] != EMPTY)
+      {
+        // VERY basic way to convert single keycode to char
+        sprintf(temp_keystate, "%c", usb_to_ascii[packet.keycode[0]] + (IS_SHIFTED(packet.modifiers) ? 'A' - 'a': 0));
+        //printf("%c\n", temp_keystate);
 
-      if (message_length < BUFFER_SIZE - 1) {
+        if (message_length < BUFFER_SIZE - 1) {
 
-        if (user_col == last_col) {
-          user_col = 0;
-          user_row++;
-        } else user_col++;
+          if (user_col == last_col) {
+            user_col = 0;
+            user_row++;
+          } else user_col++;
 
-        user_input[cursor++] = temp_keystate[0];
-        message_length++;
+          user_input[cursor++] = temp_keystate[0];
+          message_length++;
 
-        printf("cursor: %d\n", cursor);
-        printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
+          printf("user_input[%d]: %d\n", cursor-1, user_input[cursor-1]);
+        }
       }
 
       if (packet.keycode[0] == LEFT_ARROW) {
