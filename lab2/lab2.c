@@ -350,7 +350,7 @@ void *network_thread_f(void *ignored)
   int n;
 
   // get last visible row and col of screen
-  int last_row = getLastRow();
+  // int last_row = getLastRow();
   int last_col = getLastCol();
 
   int row = SERVER_FIRST_ROW; // row in which messages begin on
