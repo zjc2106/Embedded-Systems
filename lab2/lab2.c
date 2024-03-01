@@ -189,6 +189,13 @@ int main()
   for (;;) {
 
     fbputs(user_input, USER_FIRST_ROW, 0);
+    
+    char spaces[BUFFER_SIZE - message_length];
+    memset(spaces, ' ', BUFFER_SIZE - message_length);
+    spaces[BUFFER_SIZE - message_length - 1] = '\0';
+    
+    fbputs(spaces, user_row, user_col);
+    
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
