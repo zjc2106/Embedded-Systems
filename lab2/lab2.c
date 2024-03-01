@@ -186,7 +186,16 @@ int main()
       printf("%s\n", keystate);
       // fbputs(keystate, 21, 0);
 
-      if (packet.keycode[0] == BACKSPACE) {
+      if (packet.keycode[0] == ENTER) {
+        // send message to server
+        write(sockfd, user_input, strlen(user_input));
+        memset(user_input, '\0', BUFFER_SIZE);
+        cursor = 0;
+        message_length = 0;
+        user_row = USER_FIRST_ROW;
+        user_col = 0;
+      }
+      else if (packet.keycode[0] == BACKSPACE) {
         user_input[cursor] = ' ';
         if (cursor > 0) {
           cursor--;
