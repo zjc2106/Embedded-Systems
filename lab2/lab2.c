@@ -27,7 +27,7 @@
  * https://web.archive.org/web/20130307100215/http://beej.us/guide/bgnet/output/html/singlepage/bgnet.html
  *
  * http://www.thegeekstuff.com/2011/12/c-socket-programming/
- * 
+ *
  */
 
 #define SERVER_HOST "128.59.19.114"
@@ -49,6 +49,12 @@ void clear_user_input(char *user_input, int *cursor, int *message_length)
   *message_length = 0;
   memset(user_input, '\0', BUFFER_SIZE);
   fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+}
+
+void render_user_input(char *user_input)
+{
+  fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+  fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
 }
 
 int main()
@@ -140,10 +146,16 @@ int main()
       }
 
       else if (packet.keycode[0] == LEFT_ARROW && cursor > 0)
+      {
         cursor--;
+        render_user_input(user_input);
+      }
 
       else if (packet.keycode[0] == RIGHT_ARROW && cursor < message_length)
+      {
         cursor++;
+        render_user_input(user_input);
+      }
 
       else if (packet.keycode[0] == ENTER)
       {
@@ -158,6 +170,8 @@ int main()
 
         user_input[message_length--] = '\0';
         cursor--;
+
+        render_user_input(user_input);
       }
 
       else if (packet.keycode[0] == ESCAPE)
@@ -165,13 +179,14 @@ int main()
 
       if (packet.keycode[0] == RELEASE)
       { // on RELEASE event, add temp_keystate to user_input
-        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != '\0') {
-          for (int i = message_length-1; i >= cursor; i++) user_input[i] = user_input[i+1];
+        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != '\0')
+        {
+          for (int i = message_length - 1; i >= cursor; i++)
+            user_input[i] = user_input[i + 1];
           user_input[cursor++] = temp_keystate[0];
           user_input[++message_length] = '\0';
 
-          fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
-          fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
+          render_user_input(user_input);
         }
       }
       else // on PRESS event, update temp_keystate
