@@ -87,12 +87,15 @@ int main()
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = FIRST_COL; col < LAST_COL; col++)
-  {
-    fbputchar('*', 0, col);
-    fbputchar('*', num_rows - 1, col);
-    fbputchar('-', user_first_row - 1, col);
-  }
+  // for (col = FIRST_COL; col < LAST_COL; col++)
+  // {
+  //   fbputchar('*', 0, col);
+  //   fbputchar('*', num_rows - 1, col);
+  //   fbputchar('-', user_first_row - 1, col);
+  // }
+
+  printf("%d\n", num_rows);
+  printf("%d\n", num_cols);
 
   /* Open the keyboard */
   if ((keyboard = openkeyboard(&endpoint_address)) == NULL)
@@ -137,6 +140,7 @@ int main()
   for (;;)
   {
     int cursor_row = (cursor / num_cols + user_first_row);
+    int cursor_col = (cursor % num_cols);
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], CURSOR_ROW(cursor), CURSOR_COL(cursor));
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
