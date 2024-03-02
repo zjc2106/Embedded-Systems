@@ -179,8 +179,10 @@ int main()
         temp_keystate[0] = 0;
       }
 
-      else if (packet.keycode[0] == ESCAPE)
+      else if (packet.keycode[0] == ESCAPE) {
+        temp_keystate[0] = 0;
         break;
+      }
 
       if (packet.keycode[0] == RELEASE)
       { // on RELEASE event, add temp_keystate to user_input
