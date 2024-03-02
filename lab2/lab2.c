@@ -69,7 +69,6 @@ int main()
   // testing var used for keyboard input
   char temp_keystate[1];
 
-
   if ((err = fbopen()) != 0)
   {
     fprintf(stderr, "Error: Could not open framebuffer: %d\n", err);
@@ -183,7 +182,7 @@ int main()
         if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0)
         {
           for (int i = message_length - 1; i >= cursor; i--)
-            user_input[i+1] = user_input[i];
+            user_input[i + 1] = user_input[i];
           user_input[cursor++] = temp_keystate[0];
           user_input[++message_length] = '\0';
 
@@ -191,8 +190,8 @@ int main()
         }
       }
       temp_keystate[0] = 0; // reset temp_keystate
-      else // on PRESS event, update temp_keystate
-        sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
+      else                  // on PRESS event, update temp_keystate
+          sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
     }
   }
 
