@@ -34,12 +34,8 @@
 #define SERVER_PORT 42000
 
 #define BUFFER_SIZE 128
-#define INPUT_LINES 2
 
 int sockfd; /* Socket file descriptor */
-
-int num_rows;
-int num_cols;
 
 struct libusb_device_handle *keyboard;
 uint8_t endpoint_address;
@@ -79,23 +75,15 @@ int main()
     exit(1);
   }
 
-  num_rows = get_num_rows();
-  num_cols = get_num_cols();
-
-  int user_first_row = num_rows - (INPUT_LINES + 1);
-
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  // for (col = FIRST_COL; col < LAST_COL; col++)
-  // {
-  //   fbputchar('*', 0, col);
-  //   fbputchar('*', num_rows - 1, col);
-  //   fbputchar('-', user_first_row - 1, col);
-  // }
-
-  printf("%d\n", num_rows);
-  printf("%d\n", num_cols);
+  for (col = FIRST_COL; col < LAST_COL; col++)
+  {
+    fbputchar('*', SERVER_FIRST_ROW - 1, col);
+    fbputchar('*', 23, col);
+    fbputchar('-', SERVER_LAST_ROW + 1, col);
+  }
 
   /* Open the keyboard */
   if ((keyboard = openkeyboard(&endpoint_address)) == NULL)
@@ -139,8 +127,6 @@ int main()
 
   for (;;)
   {
-    int cursor_row = (cursor / num_cols + user_first_row);
-    int cursor_col = (cursor % num_cols);
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], CURSOR_ROW(cursor), CURSOR_COL(cursor));
 
     libusb_interrupt_transfer(keyboard, endpoint_address,

@@ -57,13 +57,6 @@ int fbopen()
   return 0;
 }
 
-int get_num_cols() {
-  return fb_vinfo.xres / FONT_WIDTH;
-}
-
-int get_num_rows() {
-  return fb_vinfo.yres / FONT_HEIGHT;
-}
 
 /*
  * Draw the given character at the given row/column.
@@ -166,7 +159,7 @@ int fbputs(const char *s, int row, int col)
   int origCol = col; 
   while ((c = *s++) != 0) {
     // wraparound check
-    if(col >= get_num_cols() - 1 || c == '\n'){
+    if(col > LAST_COL || c == '\n'){
       row+=1;
       col = origCol;
     }
@@ -181,7 +174,7 @@ int fbputs(const char *s, int row, int col)
 
 void fbclearrows(int start, int end) {
  for (int row = start; row <= end; row++) {
-    for (int col = 0 ; col <= get_num_cols() - 1; col++) {
+    for (int col = 0 ; col <= LAST_COL ; col++) {
       fbputchar(' ', row, col);
     }
   }
