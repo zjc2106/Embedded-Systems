@@ -124,7 +124,6 @@ int main()
   int message_length = 0;
   char user_input[BUFFER_SIZE];
 
-  int prev_keycode = EMPTY;
 
   int user_row = USER_FIRST_ROW;
   int user_col = FIRST_COL;
