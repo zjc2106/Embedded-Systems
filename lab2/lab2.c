@@ -61,10 +61,6 @@ int main()
   int transferred;
   char keystate[12];
 
-  // get last visible row and col of screen
-  int last_row = 0;
-  int last_col = 64;
-
   // testing var used for keyboard input
   char temp_keystate[1];
 
@@ -123,10 +119,6 @@ int main()
   int cursor = 0;
   int message_length = 0;
   char user_input[BUFFER_SIZE];
-
-
-  int user_row = USER_FIRST_ROW;
-  int user_col = FIRST_COL;
 
   for (;;)
   {
