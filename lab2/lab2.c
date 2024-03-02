@@ -14,51 +14,12 @@
 #include "usbkeyboard.h"
 #include <pthread.h>
 #include "keymappings.h"
+#include "displayconstants.h"
 
 /* Update SERVER_HOST to be the IP address of
  * the chat server you are connecting to
  */
 /* arthur.cs.columbia.edu */
-#define SERVER_HOST "128.59.19.114"
-#define SERVER_PORT 42000
-
-#define BUFFER_SIZE 128
-
-#define SERVER_FIRST_ROW 1
-#define SERVER_LAST_ROW 19
-
-#define USER_FIRST_ROW 21
-#define USER_LAST_ROW 22
-#define NUM_USER_ROWS (USER_LAST_ROW - USER_FIRST_ROW + 1)
-
-#define FIRST_COL 0
-#define LAST_COL 63
-#define LINE_WIDTH (LAST_COL - FIRST_COL + 1)
-
-#define CURSOR_COL(x) (x % LINE_WIDTH + FIRST_COL)
-#define CURSOR_ROW(x) (x / LINE_WIDTH + USER_FIRST_ROW)
-
-#define LEFT_SHIFT 0x02
-#define RIGHT_SHIFT 0x20
-
-#define IS_SHIFTED(x) (x == LEFT_SHIFT || x == RIGHT_SHIFT)
-
-#define LEFT_CTRL 0x01
-#define RIGHT_CTRL 0x10
-
-#define IS_CTRL(x) (x == LEFT_CTRL || x == RIGHT_CTRL)
-
-// non printable keystrokes
-#define LEFT_ARROW 0x50
-#define RIGHT_ARROW 0x4F
-#define UP_ARROW 0x52
-#define DOWN_ARROW 0x51
-
-#define ENTER 0x28
-#define RELEASE 0x00
-#define ESCAPE 0x29
-
-#define BACKSPACE 0x2A
 
 /*
  * References:
@@ -68,6 +29,11 @@
  * http://www.thegeekstuff.com/2011/12/c-socket-programming/
  * 
  */
+
+#define SERVER_HOST "128.59.19.114"
+#define SERVER_PORT 42000
+
+#define BUFFER_SIZE 128
 
 int sockfd; /* Socket file descriptor */
 
@@ -117,10 +83,6 @@ int main()
     fbputchar('*', 23, col);
     fbputchar('-', SERVER_LAST_ROW + 1, col);
   }
-
-  fbputchar('*', USER_LAST_ROW + 1, FIRST_COL);
-
-  // fbputs("Hello CSEE 4840 World!", 4, 10);
 
   /* Open the keyboard */
   if ((keyboard = openkeyboard(&endpoint_address)) == NULL)
@@ -172,10 +134,7 @@ int main()
     fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
     fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
 
-    user_row = cursor / NUM_COLS + USER_FIRST_ROW;
-    user_col = cursor % NUM_COLS + FIRST_COL;
-
-    cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], user_row, user_col);
+    cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], CURSOR_ROW(cursor), CURSOR_COL(cursor));
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
                               (unsigned char *)&packet, sizeof(packet),
@@ -217,16 +176,15 @@ int main()
       else if (packet.keycode[0] == ESCAPE)
         break;
 
-      if (packet.keycode[0] == RELEASE && temp_keystate[0] != '\0')
-      { // on RELEASE event add previous key to user_input
-        if (message_length < BUFFER_SIZE - 1) {
+      if (packet.keycode[0] == RELEASE)
+      { // on RELEASE event, add temp_keystate to user_input
+        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != '\0') {
           for (int i = message_length-1; i >= cursor; i++) user_input[i] = user_input[i+1];
           user_input[cursor++] = temp_keystate[0];
           user_input[++message_length] = '\0';
         }
       }
-
-      else
+      else // on PRESS event, update temp_keystate
         sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
     }
   }
