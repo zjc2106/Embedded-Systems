@@ -139,6 +139,8 @@ int main()
       printf("%s\n", user_input);
       printf("%02x %02x %02x\n", packet.modifiers, packet.keycode[0], packet.keycode[1]);
 
+      temp_keystate[0] = 0; // reset temp_keystate
+
       if (IS_CTRL(packet.modifiers))
       {
         if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u')
@@ -189,7 +191,6 @@ int main()
           render_user_input(user_input);
         }
       }
-      temp_keystate[0] = 0; // reset temp_keystate
       else                  // on PRESS event, update temp_keystate
           sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
     }
