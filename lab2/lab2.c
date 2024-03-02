@@ -184,7 +184,7 @@ int main()
 
       if (packet.keycode[0] == RELEASE)
       { // on RELEASE event, add temp_keystate to user_input
-        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != '\0')
+        if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != 0)
         {
           for (int i = message_length - 1; i >= cursor; i--)
             user_input[i+1] = user_input[i];
@@ -194,6 +194,7 @@ int main()
           render_user_input(user_input);
         }
       }
+      temp_keystate[0] = 0; // reset temp_keystate
       else // on PRESS event, update temp_keystate
         sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
     }
