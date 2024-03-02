@@ -139,30 +139,32 @@ int main()
       printf("%s\n", user_input);
       printf("%02x %02x %02x\n", packet.modifiers, packet.keycode[0], packet.keycode[1]);
 
-      temp_keystate[0] = 0; // reset temp_keystate
-
       if (IS_CTRL(packet.modifiers))
       {
         if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u')
           clear_user_input(user_input, &cursor, &message_length);
+          temp_keystate[0] = 0;
       }
 
       else if (packet.keycode[0] == LEFT_ARROW && cursor > 0)
       {
         cursor--;
         render_user_input(user_input);
+        temp_keystate[0] = 0;
       }
 
       else if (packet.keycode[0] == RIGHT_ARROW && cursor < message_length)
       {
         cursor++;
         render_user_input(user_input);
+          temp_keystate[0] = 0;
       }
 
       else if (packet.keycode[0] == ENTER)
       {
         write(sockfd, user_input, strlen(user_input)); // send message to server
         clear_user_input(user_input, &cursor, &message_length);
+        temp_keystate[0] = 0;
       }
 
       else if (packet.keycode[0] == BACKSPACE && cursor > 0)
@@ -174,6 +176,7 @@ int main()
         cursor--;
 
         render_user_input(user_input);
+        temp_keystate[0] = 0;
       }
 
       else if (packet.keycode[0] == ESCAPE)
@@ -190,6 +193,7 @@ int main()
 
           render_user_input(user_input);
         }
+        temp_keystate[0] = 0;
       }
       else                  // on PRESS event, update temp_keystate
           sprintf(temp_keystate, "%c", mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)));
