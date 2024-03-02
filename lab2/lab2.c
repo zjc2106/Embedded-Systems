@@ -59,7 +59,6 @@ int main()
 
   struct usb_keyboard_packet packet;
   int transferred;
-  char keystate[12];
 
   // testing var used for keyboard input
   char temp_keystate[1];
