@@ -68,10 +68,6 @@ int main()
 
   // testing var used for keyboard input
   char temp_keystate[1];
-  
-  int temp = getLastCol();
-
-  printf("%d", temp);
 
 
   if ((err = fbopen()) != 0)
