@@ -91,7 +91,7 @@ int main()
   {
     fbputchar('*', 0, col);
     fbputchar('*', num_rows - 1, col);
-    fbputchar('-', num_rows - (INPUT_LINES + 2), col);
+    fbputchar('-', user_first_row - 1, col);
   }
 
   /* Open the keyboard */
@@ -136,7 +136,7 @@ int main()
 
   for (;;)
   {
-    int cursor_row = (cursor / num_cols + user_first_row)
+    int cursor_row = (cursor / num_cols + user_first_row);
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], CURSOR_ROW(cursor), CURSOR_COL(cursor));
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
