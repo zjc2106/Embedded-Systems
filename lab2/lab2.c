@@ -135,10 +135,6 @@ int main()
 
     if (transferred == sizeof(packet))
     {
-      // print incoming keyboard packet
-      printf("%s\n", user_input);
-      printf("%02x %02x %02x\n", packet.modifiers, packet.keycode[0], packet.keycode[1]);
-
       if (IS_CTRL(packet.modifiers))
       {
         if (mapCharacter(packet.keycode[0], IS_SHIFTED(packet.modifiers)) == 'u')
