@@ -181,8 +181,8 @@ int main()
       { // on RELEASE event, add temp_keystate to user_input
         if (message_length < BUFFER_SIZE - 1 && temp_keystate[0] != '\0')
         {
-          for (int i = message_length - 1; i >= cursor; i++)
-            user_input[i] = user_input[i + 1];
+          for (int i = message_length - 1; i >= cursor; i--)
+            user_input[i+1] = user_input[i];
           user_input[cursor++] = temp_keystate[0];
           user_input[++message_length] = '\0';
 
