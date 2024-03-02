@@ -6,7 +6,7 @@
 #define NUM_USER_ROWS (USER_LAST_ROW - USER_FIRST_ROW + 1)
 
 #define FIRST_COL 0
-#define LAST_COL (fb_vinfo.xres / FONT_WIDTH) - 1
+#define LAST_COL 63
 #define LINE_WIDTH (LAST_COL - FIRST_COL + 1)
 
 #define CURSOR_COL(x) (x % LINE_WIDTH + FIRST_COL)
