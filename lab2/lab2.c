@@ -121,9 +121,6 @@ int main()
 
   for (;;)
   {
-    fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
-    fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
-
     cursor_fbputchar((cursor >= message_length) ? ' ' : user_input[cursor], CURSOR_ROW(cursor), CURSOR_COL(cursor));
 
     libusb_interrupt_transfer(keyboard, endpoint_address,
@@ -134,7 +131,7 @@ int main()
     {
       // print incoming keyboard packet
       printf("%s\n", user_input);
-      printf("%02x %02x %02x", packet.modifiers, packet.keycode[0], packet.keycode[1]);
+      printf("%02x %02x %02x\n", packet.modifiers, packet.keycode[0], packet.keycode[1]);
 
       if (IS_CTRL(packet.modifiers))
       {
@@ -172,6 +169,9 @@ int main()
           for (int i = message_length-1; i >= cursor; i++) user_input[i] = user_input[i+1];
           user_input[cursor++] = temp_keystate[0];
           user_input[++message_length] = '\0';
+
+          fbclearrows(USER_FIRST_ROW, USER_LAST_ROW);
+          fbputs(user_input, USER_FIRST_ROW, FIRST_COL);
         }
       }
       else // on PRESS event, update temp_keystate
