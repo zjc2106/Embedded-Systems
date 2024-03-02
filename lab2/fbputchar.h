@@ -12,10 +12,11 @@ extern void fbputchar(char, int, int);
 extern int fbputs(const char *, int, int);
 // zac functions
 extern void fbclear(void);
-extern int getLastCol(void);
-extern int getLastRow(void);
+extern int get_num_cols(void);
+extern int get_num_rows(void);
 
 extern void cursor_fbputchar(char c, int row, int col);
 extern void fbclearrows(int start, int end);
+
 
 #endif
