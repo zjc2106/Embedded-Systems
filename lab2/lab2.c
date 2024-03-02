@@ -217,7 +217,7 @@ void *network_thread_f(void *ignored)
   {
     recvBuf[n] = '\0';
     printf("%s\n", recvBuf);
-    if ((strlen(recvBuf) / LINE_WIDTH) + row > SERVER_LAST_ROW)
+    if ((strlen(recvBuf) / NUM_COLS) + row > SERVER_LAST_ROW)
     {
       fbclearrows(SERVER_FIRST_ROW, SERVER_LAST_ROW);
       row = SERVER_FIRST_ROW;
