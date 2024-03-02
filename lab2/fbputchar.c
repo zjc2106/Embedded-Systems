@@ -19,6 +19,7 @@
 #include <sys/ioctl.h>
 #include <string.h>
 #include <linux/fb.h>
+#include "displayconstants.h"
 
 #define FBDEV "/dev/fb0"
 
@@ -31,10 +32,6 @@ struct fb_var_screeninfo fb_vinfo;
 struct fb_fix_screeninfo fb_finfo;
 unsigned char *framebuffer;
 static unsigned char font[];
-
-// zac variables
-// last visible column on the screen
-#define LAST_COL 64
 
 /*
  * Open the framebuffer to prepare it to be written to.  Returns 0 on success
