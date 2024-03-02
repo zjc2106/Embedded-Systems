@@ -73,7 +73,7 @@ int main()
   fbclear();
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = FIRST_COL; col < last_col; col++)
+  for (col = FIRST_COL; col < LAST_COL; col++)
   {
     fbputchar('*', SERVER_FIRST_ROW - 1, col);
     fbputchar('*', 23, col);
